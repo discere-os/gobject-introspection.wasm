@@ -213,9 +213,16 @@ if not with_doctool
   warning('Not building with doctool support, not all tests will be run')
 endif
 
-subdir('girepository')
-subdir('tools')
-subdir('giscanner')
+if get_option('build_library_and_c_tools') == true
+  subdir('girepository')
+  subdir('c-tools')
+else
+  girepo_dep = disabler()
+endif
+if get_option('build_python_tools') == true
+  subdir('giscanner')
+  subdir('py-tools')
+endif
 
 # Not building gir data might be useful in cross-compilation
 # scenarios where running target binaries through software emulation
@@ -236,65 +243,67 @@ if not meson.is_cross_build()
   subdir('tests')
 endif
 
-install_data('Makefile.introspection', install_dir: join_paths(get_option('datadir'), 'gobject-introspection-1.0'))
-install_data('m4/introspection.m4', install_dir: join_paths(get_option('datadir'), 'aclocal'))
+if get_option('build_library_and_c_tools') == true
+  install_data('Makefile.introspection', install_dir: join_paths(get_option('datadir'), 'gobject-introspection-1.0'))
+  install_data('m4/introspection.m4', install_dir: join_paths(get_option('datadir'), 'aclocal'))
 
-pkg = import('pkgconfig')
+  pkg = import('pkgconfig')
 
-# We must put in the '.exe' extension for .exe executables
-exe_ext = ''
+  # We must put in the '.exe' extension for .exe executables
+  exe_ext = ''
 
-if host_system == 'windows' or host_system == 'cygwin'
-  exe_ext = '.exe'
-endif
+  if host_system == 'windows' or host_system == 'cygwin'
+    exe_ext = '.exe'
+  endif
 
-pkgconfig_variables = [
-  'datadir=' + '${prefix}' / get_option('datadir'),
-  'bindir=' + '${prefix}' / get_option('bindir'),
-  'g_ir_scanner=${bindir}/g-ir-scanner',
-  'g_ir_compiler=${bindir}/g-ir-compiler@0@'.format(exe_ext),
-  'g_ir_generate=${bindir}/g-ir-generate@0@'.format(exe_ext),
-  'gidatadir=${datadir}/gobject-introspection-1.0',
-  'girdir=' + gir_dir_pc_prefix / 'gir-1.0',
-  'typelibdir=${libdir}/girepository-1.0',
-]
+  pkgconfig_variables = [
+    'datadir=' + '${prefix}' / get_option('datadir'),
+    'bindir=' + '${prefix}' / get_option('bindir'),
+    'g_ir_scanner=${bindir}/g-ir-scanner',
+    'g_ir_compiler=${bindir}/g-ir-compiler@0@'.format(exe_ext),
+    'g_ir_generate=${bindir}/g-ir-generate@0@'.format(exe_ext),
+    'gidatadir=${datadir}/gobject-introspection-1.0',
+    'girdir=' + gir_dir_pc_prefix / 'gir-1.0',
+    'typelibdir=${libdir}/girepository-1.0',
+  ]
 
-pkg.generate(girepo_lib,
-  name : 'gobject-introspection',
-  filebase : 'gobject-introspection-1.0',
-  description : 'GObject Introspection',
-  subdirs: ['gobject-introspection-1.0'],
-  variables : pkgconfig_variables,
-  libraries : [glib_dep, gobject_dep],
-)
-
-# This is legacy for backward compat. It is identical to the pc file generated
-# above because we actually never had a pc file that has `-Wl,--export-dynamic`.
-# The reason is `gmodule-2.0` was in `Requires.private` so its libs flags are
-# only included when doing `pkg-config gobject-introspection-1.0 --libs --static`
-# which makes no sense since we don't even build static girepository library.
-# Users who need `-Wl,--export-dynamic` can add `gmodule-2.0` explicitly in their
-# dependencies in addition to `gobject-introspection-1.0`.
-pkg.generate(
-  name : 'gobject-introspection',
-  filebase : 'gobject-introspection-no-export-1.0',
-  description : 'GObject Introspection',
-  subdirs: ['gobject-introspection-1.0'],
-  variables : pkgconfig_variables,
-  libraries : [girepo_lib, glib_dep, gobject_dep],
-)
-
-# Dependency object used by Meson's GNOME module. This dependency variable must
-# be named girepo_dep for backward compatibility with projects that where already
-# using that name as fallback: dependency('gobject-introspection-1.0',
-# fallback : ['gobject-introspection', 'girepo_dep'])
-if get_option('build_introspection_data') == true
-  girepo_dep = declare_dependency(
-    sources: typelibs,
-    dependencies: girepo_dep,
-    variables: {
-      'girdir': meson.current_build_dir() / 'gir',
-    },
+  pkg.generate(girepo_lib,
+    name : 'gobject-introspection',
+    filebase : 'gobject-introspection-1.0',
+    description : 'GObject Introspection',
+    subdirs: ['gobject-introspection-1.0'],
+    variables : pkgconfig_variables,
+    libraries : [glib_dep, gobject_dep],
   )
-  meson.override_dependency('gobject-introspection-1.0', girepo_dep)
+
+  # This is legacy for backward compat. It is identical to the pc file generated
+  # above because we actually never had a pc file that has `-Wl,--export-dynamic`.
+  # The reason is `gmodule-2.0` was in `Requires.private` so its libs flags are
+  # only included when doing `pkg-config gobject-introspection-1.0 --libs --static`
+  # which makes no sense since we don't even build static girepository library.
+  # Users who need `-Wl,--export-dynamic` can add `gmodule-2.0` explicitly in their
+  # dependencies in addition to `gobject-introspection-1.0`.
+  pkg.generate(
+    name : 'gobject-introspection',
+    filebase : 'gobject-introspection-no-export-1.0',
+    description : 'GObject Introspection',
+    subdirs: ['gobject-introspection-1.0'],
+    variables : pkgconfig_variables,
+    libraries : [girepo_lib, glib_dep, gobject_dep],
+  )
+
+  # Dependency object used by Meson's GNOME module. This dependency variable must
+  # be named girepo_dep for backward compatibility with projects that where already
+  # using that name as fallback: dependency('gobject-introspection-1.0',
+  # fallback : ['gobject-introspection', 'girepo_dep'])
+  if get_option('build_introspection_data') == true
+    girepo_dep = declare_dependency(
+      sources: typelibs,
+      dependencies: girepo_dep,
+      variables: {
+        'girdir': meson.current_build_dir() / 'gir',
+      },
+    )
+    meson.override_dependency('gobject-introspection-1.0', girepo_dep)
+  endif
 endif
