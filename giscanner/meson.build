@@ -33,16 +33,24 @@ pkglibdir = join_paths(get_option('libdir'), meson.project_name())
 giscannerdir = join_paths(pkglibdir, 'giscanner')
 
 giscanner_built_files = []
+giscanner_built_targets = []
 giscanner_conf_data = configuration_data()
 giscanner_conf_data.set('VERSION', meson.project_version())
 giscanner_built_files += configure_file(input: '_version.py.in',
                                         output: '_version.py',
                                         install_dir : giscannerdir,
                                         configuration: giscanner_conf_data)
+
+filecopier = find_program('filecopier.py')
+
 foreach f : giscanner_files
-  giscanner_built_files += configure_file(input : f, output : f,
-                                          install_dir : giscannerdir,
-                                          configuration : giscanner_conf_data)
+  giscanner_built_targets += [custom_target(f,
+    input: f,
+    output: f,
+    command: [filecopier, '@INPUT@', '@OUTPUT@'],
+    build_by_default: true,
+    install: true,
+    install_dir : giscannerdir)]
 endforeach
 
 install_subdir('doctemplates', install_dir: giscannerdir)
