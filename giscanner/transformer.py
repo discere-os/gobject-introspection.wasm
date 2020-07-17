@@ -41,6 +41,12 @@ class TransformerException(Exception):
     pass
 
 
+class MockTypeval:
+    def __init__(self, ctype):
+        self.ctype = ctype
+        self.target_giname = None
+
+
 class Transformer(object):
     namespace = property(lambda self: self._namespace)
 
@@ -98,7 +104,7 @@ class Transformer(object):
         else:
             self._namespace.append(node)
 
-    def parse(self, symbols):
+    def parse(self, symbols, macros):
         for symbol in symbols:
             # WORKAROUND
             # https://bugzilla.gnome.org/show_bug.cgi?id=550616
@@ -116,6 +122,17 @@ class Transformer(object):
             if isinstance(node, ast.Compound) and node.tag_name and \
                     node.tag_name not in self._tag_ns:
                 self._tag_ns[node.tag_name] = node
+
+        for macro in macros:
+            try:
+                if macro.arglist is not None:
+                    node = self._create_function_macro2(macro)
+                else:
+                    node = self._create_object_macro(macro)
+                if node and node.name:
+                    self._append_new_node(node)
+            except TransformerException as e:
+                message.warn_macro(macro, e)
 
         # Run through the tag namespace looking for structs that have not been
         # promoted into the main namespace. In this case we simply promote them
@@ -348,8 +365,7 @@ raise ValueError."""
             "Skipping foreign identifier '%s' from namespace %s" % (ident, ns.name, ))
         return None
 
-    def _strip_symbol(self, symbol):
-        ident = symbol.ident
+    def _strip_symbol_ident(self, ident):
         hidden = ident.startswith('_')
         if hidden:
             ident = ident[1:]
@@ -363,6 +379,9 @@ raise ValueError."""
         if hidden:
             return '_' + name
         return name
+
+    def _strip_symbol(self, symbol):
+        return self._strip_symbol_ident(symbol.ident)
 
     def _traverse_one(self, symbol, stype=None, parent_symbol=None):
         assert isinstance(symbol, SourceSymbol), symbol
@@ -467,6 +486,52 @@ raise ValueError."""
         macro = ast.FunctionMacro(name, parameters, symbol.ident)
         macro.add_symbol_reference(symbol)
         return macro
+
+    def _create_function_macro2(self, macro):
+        if macro.name.startswith('_'):
+            return None
+
+        if macro.source is None or not macro.source.endswith('.h'):
+            return None
+
+        ret = ast.FunctionMacro(
+            self._strip_symbol_ident(macro.name),
+            [ast.Parameter(arg, None) for arg in macro.arglist],
+            macro.name)
+        ret.add_file_position(
+            message.Position(
+                macro.source,
+                macro.lineno))
+
+        return ret
+
+    def _create_object_macro(self, macro):
+        if macro.name.startswith('_'):
+            return None
+
+        if macro.source is None or not macro.source.endswith('.h'):
+            return None
+
+        ret = None
+        ident = self._strip_symbol_ident(macro.name)
+        if macro.evaluated is not None:
+            value, typename = macro.evaluated
+            typeval = self.create_type_from_ctype_string(typename)
+
+            if isinstance(value, bool):
+                value = str(value).lower()
+            elif isinstance(value, float):
+                value = '%f' % value
+            else:
+                value = str(value)
+
+            ret = ast.Constant(ident, typeval, str(value), macro.name)
+            ret.add_file_position(
+                message.Position(
+                    macro.source,
+                    macro.lineno))
+
+        return ret
 
     def _create_source_type(self, source_type, is_parameter=False):
         assert source_type is not None
@@ -641,7 +706,10 @@ raise ValueError."""
         return node
 
     def _canonicalize_ctype(self, ctype):
-        # First look up the ctype including any pointers;
+        # First strip surrounding whitespace
+        ctype = ctype.strip()
+
+        # Then look up the ctype including any pointers;
         # a few type names like 'char*' have their own aliases
         # and we need pointer information for those.
         firstpass = ast.type_names.get(ctype)

@@ -92,12 +92,12 @@ and/or use gtk-doc annotations.  -->
       </member>
     </enumeration>
     <record name="AnAnonymousUnion" c:type="RegressAnAnonymousUnion">
-      <source-position filename="regress.h" line="1494"/>
+      <source-position filename="regress.h" line="1508"/>
       <field name="x" writable="1">
         <type name="gint" c:type="int"/>
       </field>
       <union>
-        <source-position filename="regress.h" line="1493"/>
+        <source-position filename="regress.h" line="1507"/>
         <field name="a" writable="1">
           <array zero-terminated="0" fixed-size="2">
             <type name="LikeGnomeKeyringPasswordSchema"
@@ -1225,14 +1225,14 @@ it says it's pointer but it's actually a string.</doc>
     </record>
     <record name="AnonymousUnionAndStruct"
             c:type="RegressAnonymousUnionAndStruct">
-      <source-position filename="regress.h" line="1507"/>
+      <source-position filename="regress.h" line="1521"/>
       <field name="x" writable="1">
         <type name="gint" c:type="int"/>
       </field>
       <union>
-        <source-position filename="regress.h" line="1506"/>
+        <source-position filename="regress.h" line="1520"/>
         <record>
-          <source-position filename="regress.h" line="1503"/>
+          <source-position filename="regress.h" line="1517"/>
           <field name="a" writable="1">
             <type name="LikeGnomeKeyringPasswordSchema"
                   c:type="RegressLikeGnomeKeyringPasswordSchema*"/>
@@ -2593,13 +2593,13 @@ exposed to language bindings.</doc>
     <constant name="GI_SCANNER_ELSE"
               value="3"
               c:type="REGRESS_GI_SCANNER_ELSE">
-      <source-position filename="regress.h" line="1471"/>
+      <source-position filename="regress.h" line="1490"/>
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="GI_SCANNER_IFDEF"
               value="3"
               c:type="REGRESS_GI_SCANNER_IFDEF">
-      <source-position filename="regress.h" line="1475"/>
+      <source-position filename="regress.h" line="1494"/>
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="GUINT64_CONSTANT"
@@ -2677,13 +2677,13 @@ exposed to language bindings.</doc>
     <constant name="MAXUINT64"
               value="18446744073709551615"
               c:type="REGRESS_MAXUINT64">
-      <source-position filename="regress.h" line="1465"/>
+      <source-position filename="regress.h" line="1484"/>
       <type name="guint64" c:type="guint64"/>
     </constant>
     <constant name="MININT64"
               value="-9223372036854775808"
               c:type="REGRESS_MININT64">
-      <source-position filename="regress.h" line="1464"/>
+      <source-position filename="regress.h" line="1483"/>
       <type name="gint64" c:type="gint64"/>
     </constant>
     <constant name="Mixed_Case_Constant"
@@ -2719,6 +2719,15 @@ use it should be.</doc>
         <type name="gdouble" c:type="double"/>
       </field>
     </record>
+    <constant name="TEST_EVALUE_DEPRECATED"
+              value="0"
+              c:type="REGRESS_TEST_EVALUE_DEPRECATED">
+      <doc xml:space="preserve"
+           filename="regress.h"
+           line="427">Scanner used to replace %REGRESS_TEST_EVALUE1 with %REGRESS_TEST_EVALUE_DEPRECATED.</doc>
+      <source-position filename="regress.h" line="432"/>
+      <type name="gint" c:type="gint"/>
+    </constant>
     <function-macro name="TEST_FLOATING"
                     c:identifier="REGRESS_TEST_FLOATING"
                     introspectable="0">
@@ -2770,15 +2779,6 @@ use it should be.</doc>
       <source-position filename="regress.h" line="1013"/>
       <parameters>
         <parameter name="obj">
-        </parameter>
-      </parameters>
-    </function-macro>
-    <function-macro name="TEST_GNUC_EXTENSION_STMT"
-                    c:identifier="REGRESS_TEST_GNUC_EXTENSION_STMT"
-                    introspectable="0">
-      <source-position filename="regress.h" line="1438"/>
-      <parameters>
-        <parameter name="foo">
         </parameter>
       </parameters>
     </function-macro>
@@ -5174,7 +5174,7 @@ the introspection client langage.</doc>
       </field>
     </record>
     <record name="TestReferenceCounters" c:type="RegressTestReferenceCounters">
-      <source-position filename="regress.h" line="1517"/>
+      <source-position filename="regress.h" line="1531"/>
       <field name="refcount" writable="1">
         <type name="gint" c:type="grefcount"/>
       </field>
@@ -6336,7 +6336,7 @@ exposed to language bindings.</doc>
       </parameters>
     </function>
     <function name="get_variant" c:identifier="regress_get_variant">
-      <source-position filename="regress.h" line="1510"/>
+      <source-position filename="regress.h" line="1524"/>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve"
              filename="regress.c"
@@ -6859,7 +6859,7 @@ in particular, but it should be serialized in the gir nevertheless.</doc>
 Similar to:
 - gsf_property_settings_free() with structs but they contain pointers
 - g_byte_array_new_take() with guint8s</doc>
-      <source-position filename="regress.h" line="1532"/>
+      <source-position filename="regress.h" line="1546"/>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -6887,7 +6887,7 @@ Similar to:
            line="4671">Test flat array input with transfer none.
 
 Similar to g_main_context_check() or gtk_target_list_new().</doc>
-      <source-position filename="regress.h" line="1535"/>
+      <source-position filename="regress.h" line="1549"/>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -6941,7 +6941,7 @@ Similar to g_main_context_check() or gtk_target_list_new().</doc>
            line="4630">Test flat caller-allocated array output.
 
 Similar to g_main_context_query().</doc>
-      <source-position filename="regress.h" line="1529"/>
+      <source-position filename="regress.h" line="1543"/>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -6975,7 +6975,7 @@ Similar to g_main_context_query().</doc>
            line="4592">Test flat array output with transfer container.
 
 Similar to pango_layout_get_log_attrs().</doc>
-      <source-position filename="regress.h" line="1523"/>
+      <source-position filename="regress.h" line="1537"/>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -7007,7 +7007,7 @@ Similar to pango_layout_get_log_attrs().</doc>
       <doc xml:space="preserve"
            filename="regress.c"
            line="4614">Test flat fixed-size array output with transfer full.</doc>
-      <source-position filename="regress.h" line="1526"/>
+      <source-position filename="regress.h" line="1540"/>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -7037,7 +7037,7 @@ Similar to:
 - mm_modem_peek_ports() with structs
 - gdk_query_visual_types() with enums
 - gdk_event_get_axes() with doubles</doc>
-      <source-position filename="regress.h" line="1520"/>
+      <source-position filename="regress.h" line="1534"/>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>

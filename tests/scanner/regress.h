@@ -1465,8 +1465,22 @@ typedef struct {
  */
 #define _DONTSCANTHIS 1
 
-/* https://bugzilla.gnome.org/show_bug.cgi?id=685022 */
-#define REGRESS_MININT64 ((gint64) G_GINT64_CONSTANT(0x8000000000000000))
+/* https://bugzilla.gnome.org/show_bug.cgi?id=685022 for the form
+ * that was initially tested: ((gint64) G_GINT64_CONSTANT(0x8000000000000000))
+ *
+ * This however relied on signed integer overflow, which is UB and not
+ * simulated by the new expression evaluator.
+ *
+ * This was then changed to ((gint64) G_GINT64_CONSTANT(-0x8000000000000000))
+ * in the GLib (https://bugzilla.gnome.org/show_bug.cgi?id=756550), which was
+ * more correct and is properly handled by the new expression evaluator,
+ * but this was again changed because MSVC wasn't complying:
+ *
+ * https://gitlab.gnome.org/GNOME/glib/-/issues/1663
+ *
+ * The form tested is the current one, bet you can't wait for the next episode!
+ */
+#define REGRESS_MININT64 ((gint64) (-G_MAXINT64 - G_GINT64_CONSTANT(1)))
 #define REGRESS_MAXUINT64 (G_GINT64_CONSTANT(0xffffffffffffffffU))
 
 /* https://bugzilla.gnome.org/show_bug.cgi?id=698367 */

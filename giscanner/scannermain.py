@@ -461,10 +461,12 @@ def create_source_scanner(options, args):
                        cflags=options.cflags)
     try:
         ss.parse_files(filenames)
-        ss.parse_macros(filenames)
     finally:
         for error in ss.get_errors():
             print(error, file=sys.stderr)
+
+    ss.parse_macros(filenames)
+
     return ss, filenames
 
 
@@ -593,7 +595,7 @@ def scanner_main(args):
     blocks = cbp.parse_comment_blocks(ss.get_comments())
 
     # Transform the C symbols into AST nodes
-    transformer.parse(ss.get_symbols())
+    transformer.parse(ss.get_symbols(), ss.get_macros())
 
     if not options.header_only:
         shlibs = create_binary(transformer, options, args)

@@ -117,7 +117,7 @@ def check(args):
     ss.set_cpp_options(options.cpp_includes, options.cpp_defines, options.cpp_undefines)
     ss.parse_files([filename])
     ss.parse_macros([filename])
-    transformer.parse(ss.get_symbols())
+    transformer.parse(ss.get_symbols(), [])
 
     cbp = GtkDocCommentBlockParser()
     blocks = cbp.parse_comment_blocks(ss.get_comments())

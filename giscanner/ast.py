@@ -256,6 +256,17 @@ GIR_TYPES = [TYPE_NONE, TYPE_ANY]
 GIR_TYPES.extend(BASIC_GIR_TYPES)
 GIR_TYPES.extend([TYPE_STRING, TYPE_FILENAME, TYPE_VALIST])
 
+
+# These are all the types we can cast to when evaluating
+# preprocessor macros
+INTEGER_TYPES = (TYPE_BOOLEAN, TYPE_INT8, TYPE_UINT8, TYPE_INT16,
+                 TYPE_UINT16, TYPE_INT32, TYPE_UINT32, TYPE_INT64,
+                 TYPE_UINT64, TYPE_CHAR, TYPE_SHORT, TYPE_USHORT, TYPE_INT,
+                 TYPE_UINT, TYPE_LONG, TYPE_ULONG, TYPE_SIZE, TYPE_SSIZE)
+
+
+FLOATING_TYPES = (TYPE_FLOAT, TYPE_DOUBLE)
+
 # These are the only basic types that are guaranteed to
 # be as big as a pointer (and thus are allowed in GPtrArray)
 POINTER_TYPES = [TYPE_ANY, TYPE_INTPTR, TYPE_UINTPTR]

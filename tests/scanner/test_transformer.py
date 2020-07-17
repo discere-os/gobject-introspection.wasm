@@ -30,7 +30,7 @@ def create_scanner_from_source_string(source):
 def load_namespace_from_source_string(namespace, source):
     ss = create_scanner_from_source_string(source)
     xformer = Transformer(namespace)
-    xformer.parse(ss.get_symbols())
+    xformer.parse(ss.get_symbols(), [])
 
 
 class TestIdentifierFilter(unittest.TestCase):

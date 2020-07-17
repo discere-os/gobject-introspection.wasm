@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<page id="Regress.TEST_GNUC_EXTENSION_STMT"
+<page id="Regress.TEST_EVALUE_DEPRECATED"
       type="topic"
       style="default"
       xmlns="http://projectmallard.org/1.0/"
@@ -8,7 +8,7 @@
   <info>
     <link xref="index" group="default" type="guide"/>
   </info>
-  <title>Regress.TEST_GNUC_EXTENSION_STMT</title>
-
+  <title>Regress.TEST_EVALUE_DEPRECATED</title>
+  <p>Scanner used to replace <link xref="Regress.TestEnumNoGEnum"/>.evalue1 with %REGRESS_TEST_EVALUE_DEPRECATED.</p>
 
 </page>

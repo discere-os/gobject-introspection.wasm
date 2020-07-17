@@ -193,6 +193,11 @@ class MessageLogger(object):
         self.log(log_type, text, symbol.position,
                  prefix="symbol='%s'" % (symbol.ident, ))
 
+    def log_macro(self, log_type, macro, text):
+        """Log a warning in the context of the given macro."""
+        self.log(log_type, text, Position(macro.source, macro.lineno),
+                 prefix="symbol='%s'" % (macro.name, ))
+
 
 def log_node(log_type, node, text, context=None, positions=None):
     ml = MessageLogger.get()
@@ -215,6 +220,11 @@ def error_node(node, text, context=None, positions=None):
 def warn_symbol(symbol, text):
     ml = MessageLogger.get()
     ml.log_symbol(WARNING, symbol, text)
+
+
+def warn_macro(macro, text):
+    ml = MessageLogger.get()
+    ml.log_macro(WARNING, macro, text)
 
 
 def error(text, positions=None, prefix=None, marker_pos=None, marker_line=None):

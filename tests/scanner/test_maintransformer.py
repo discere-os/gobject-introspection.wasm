@@ -28,7 +28,7 @@ def create_scanner_from_source_string(source):
 def load_namespace_from_source_string(namespace, source):
     ss = create_scanner_from_source_string(source)
     transformer = Transformer(namespace)
-    transformer.parse(ss.get_symbols())
+    transformer.parse(ss.get_symbols(), [])
     cbp = GtkDocCommentBlockParser()
     blocks = cbp.parse_comment_blocks(ss.get_comments())
     main = MainTransformer(transformer, blocks)
