@@ -32,6 +32,9 @@ export CCACHE_BASEDIR="${CI_PROJECT_DIR}"
 export CCACHE_DIR="${CCACHE_BASEDIR}/_ccache"
 
 pip3 install --upgrade --user meson==0.50.1 flake8
+pip3 install --user pycparser
+pip3 install --user git+https://github.com/MathieuDuponchelle/pcpp.git@preserve-line-continuations
+
 export PATH="$HOME/.local/bin:$PATH"
 
 export CFLAGS="-Werror"

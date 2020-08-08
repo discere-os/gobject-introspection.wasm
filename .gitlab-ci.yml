@@ -12,6 +12,8 @@ example-meson:
   stage: build
   script:
     - python3 -m pip install --user mako markdown
+    - python3 -m pip install --user pycparser
+    - python3 -m pip install --user git+https://github.com/MathieuDuponchelle/pcpp.git@preserve-line-continuations
     - meson --prefix /usr --libdir /usr/lib64 --buildtype debug -Ddoctool=enabled -Dgtk_doc=true -Dcairo=enabled -Dpython=python3 _build .
     - ninja -C _build
     - sudo ninja -C _build install
@@ -30,6 +32,8 @@ example-autotools:
   stage: build
   script:
     - python3 -m pip install --user mako markdown
+    - python3 -m pip install --user pycparser
+    - python3 -m pip install --user git+https://github.com/MathieuDuponchelle/pcpp.git@preserve-line-continuations
     - meson --prefix /usr --libdir /usr/lib64 --buildtype debug -Ddoctool=enabled -Dgtk_doc=true -Dcairo=enabled -Dpython=python3 _build .
     - ninja -C _build
     - sudo ninja -C _build install
@@ -48,6 +52,8 @@ fedora-x86_64-meson:
     CFLAGS: "-Werror"
   script:
     - python3 -m pip install --user mako markdown
+    - python3 -m pip install --user pycparser
+    - python3 -m pip install --user git+https://github.com/MathieuDuponchelle/pcpp.git@preserve-line-continuations
     - meson --prefix /usr --libdir /usr/lib64 --buildtype debug -Ddoctool=enabled -Dgtk_doc=true -Dcairo=enabled -Dpython=python3 _build .
     - cd _build
     - ninja
@@ -74,6 +80,8 @@ fedora-x86_64-subprojects:
     CCACHE_BASEDIR: "${CI_PROJECT_DIR}"
     CCACHE_DIR: "${CI_PROJECT_DIR}/_ccache"
   script:
+    - python3 -m pip install --user pycparser
+    - python3 -m pip install --user git+https://github.com/MathieuDuponchelle/pcpp.git@preserve-line-continuations
     - meson _build .
     - cd _build
     - ninja
@@ -95,6 +103,8 @@ fedora-x86_64-python3.5:
     PYENV_VERSION: "3.5.6"
   script:
     - python3 -m pip install --user mako markdown
+    - python3 -m pip install --user pycparser
+    - python3 -m pip install --user git+https://github.com/MathieuDuponchelle/pcpp.git@preserve-line-continuations
     - meson --prefix /usr --libdir /usr/lib64 --buildtype debug -Ddoctool=enabled -Dgtk_doc=true -Dcairo=enabled -Dpython=python3 _build .
     - cd _build
     - ninja

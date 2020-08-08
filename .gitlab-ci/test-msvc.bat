@@ -10,6 +10,8 @@ py -3 -c "import urllib.request, sys; urllib.request.urlretrieve(*sys.argv[1:])"
 SET PATH=%CD%;%CD%\win_flex_bison;%PATH%
 
 pip3 install --upgrade --user meson==0.50.1 || goto :error
+pip3 install --upgrade --user pycparser || goto :error
+pip3 install --upgrade --user git+https://github.com/MathieuDuponchelle/pcpp.git@preserve-line-continuations || goto :error
 meson _build || goto :error
 ninja -C _build || goto :error
 
