@@ -22,7 +22,7 @@ import os
 import sys
 import subprocess
 
-from . import ast
+from . import gi_ast as ast
 from . import message
 from . import utils
 from .cachestore import CacheStore

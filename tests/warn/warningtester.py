@@ -12,7 +12,7 @@ builtins.__dict__['DATADIR'] = path
 builtins.__dict__['GIRDIR'] = ''
 
 from giscanner.annotationparser import GtkDocCommentBlockParser
-from giscanner.ast import Include, Namespace
+from giscanner.gi_ast import Include, Namespace
 from giscanner.introspectablepass import IntrospectablePass
 from giscanner.maintransformer import MainTransformer
 from giscanner.message import MessageLogger

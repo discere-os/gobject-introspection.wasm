@@ -4,7 +4,7 @@ import os
 
 os.environ['GI_SCANNER_DISABLE_CACHE'] = '1'
 
-from giscanner import ast
+from giscanner import gi_ast as ast
 from giscanner.sourcescanner import SourceScanner
 from giscanner.transformer import Transformer
 from giscanner.annotationparser import GtkDocCommentBlockParser

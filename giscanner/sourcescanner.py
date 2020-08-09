@@ -228,7 +228,7 @@ def bool_cast():
 # This is to make cases such as REGRESS_GUINT64_CONSTANTA and
 # REGRESS_FOO_FLAGS_SECOND_AND_THIRD pass (grep in the test suite)
 def visit_typedefs(symbols):
-    from giscanner.ast import INTEGER_TYPES, FLOATING_TYPES
+    from giscanner.gi_ast import INTEGER_TYPES, FLOATING_TYPES
     extra_typedefs = OrderedDict()
     enum_member_values = {}
     basic_ctypes = [t.ctype for t in INTEGER_TYPES + FLOATING_TYPES]
@@ -474,7 +474,7 @@ class SourceScanner(object):
         self._parse(headers)
 
     def parse_macros(self, filenames):
-        from giscanner.ast import INTEGER_TYPES, FLOATING_TYPES
+        from giscanner.gi_ast import INTEGER_TYPES, FLOATING_TYPES
 
         eval_typedefs = '\n'.join([
             'typedef int {};'.format(t.ctype) for t in INTEGER_TYPES

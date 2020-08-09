@@ -21,7 +21,7 @@
 import os
 from contextlib import contextmanager
 
-from . import ast
+from . import gi_ast as ast
 
 
 class CCodeGenerator(object):

@@ -20,7 +20,7 @@
 
 from io import StringIO
 
-from . import ast
+from . import gi_ast as ast
 from .codegen import CCodeGenerator
 
 DEFAULT_C_VALUES = {ast.TYPE_ANY: 'NULL',

@@ -24,7 +24,7 @@ import tempfile
 import subprocess
 from xml.etree.ElementTree import parse
 
-from . import ast
+from . import gi_ast as ast
 from . import message
 from . import utils
 from .transformer import TransformerException

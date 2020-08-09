@@ -32,7 +32,7 @@ import unittest
 import xml.etree.ElementTree as etree
 
 from giscanner.annotationparser import GtkDocCommentBlockParser, GtkDocCommentBlockWriter
-from giscanner.ast import Namespace
+from giscanner.gi_ast import Namespace
 from giscanner.message import MessageLogger
 
 

@@ -32,7 +32,7 @@ import shlex
 import giscanner
 from giscanner import message, pkgconfig
 from giscanner.annotationparser import GtkDocCommentBlockParser
-from giscanner.ast import Include, Namespace
+from giscanner.gi_ast import Include, Namespace
 from giscanner.dumper import compile_introspection_binary
 from giscanner.gdumpparser import GDumpParser, IntrospectionBinary
 from giscanner.introspectablepass import IntrospectablePass

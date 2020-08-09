@@ -29,7 +29,8 @@ from xml.sax import saxutils
 from mako.lookup import TemplateLookup
 import markdown
 
-from . import ast, xmlwriter
+from . import gi_ast as ast
+from . import xmlwriter
 from .utils import to_underscores
 from .mdextensions import InlineMarkdown
 

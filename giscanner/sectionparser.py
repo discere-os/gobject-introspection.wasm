@@ -18,7 +18,7 @@
 #
 
 import re
-from . import ast
+from . import gi_ast as ast
 from .utils import to_underscores
 
 

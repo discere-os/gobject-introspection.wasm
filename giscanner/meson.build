@@ -2,7 +2,7 @@ giscanner_files = [
   '__init__.py',
   'annotationmain.py',
   'annotationparser.py',
-  'ast.py',
+  'gi_ast.py',
   'cachestore.py',
   'ccompiler.py',
   'codegen.py',

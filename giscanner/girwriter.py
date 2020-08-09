@@ -21,7 +21,7 @@
 
 import os
 
-from . import ast
+from . import gi_ast as ast
 from .xmlwriter import XMLWriter
 
 # Bump this for *incompatible* changes to the .gir.

@@ -23,7 +23,7 @@ import os
 from collections import OrderedDict
 from xml.etree.ElementTree import parse
 
-from . import ast
+from . import gi_ast as ast
 from .girwriter import COMPATIBLE_GIR_VERSION
 from .message import Position
 

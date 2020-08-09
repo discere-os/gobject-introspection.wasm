@@ -17,7 +17,7 @@
 # Boston, MA 02111-1307, USA.
 #
 
-from . import ast
+from . import gi_ast as ast
 from . import message
 from .annotationparser import TAG_RETURNS
 

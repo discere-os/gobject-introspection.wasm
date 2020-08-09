@@ -19,7 +19,7 @@
 
 import re
 
-from . import ast
+from . import gi_ast as ast
 from . import message
 from .annotationparser import (TAG_DEPRECATED, TAG_SINCE, TAG_STABILITY, TAG_RETURNS)
 from .annotationparser import (ANN_ALLOW_NONE, ANN_ARRAY, ANN_ATTRIBUTES, ANN_CLOSURE,
