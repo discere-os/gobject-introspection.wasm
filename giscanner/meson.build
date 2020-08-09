@@ -53,6 +53,18 @@ foreach f : giscanner_files
     install_dir : giscannerdir)]
 endforeach
 
+giscanner_built_targets += [custom_target('copy-fake-libc-include',
+  input : 'fake_libc_include',
+  output : 'fake_libc_include',
+  install: true,
+  install_dir : giscannerdir,
+  command : [
+    python, '-c',
+      'import sys, shutil;' +
+      'shutil.rmtree(sys.argv[2], ignore_errors=True);' +
+      'shutil.copytree(sys.argv[1], sys.argv[2])',
+    '@INPUT@', '@OUTPUT@'])]
+
 install_subdir('doctemplates', install_dir: giscannerdir)
 
 # XXX: this doesn't track the input, but there is nothing to copy many files
