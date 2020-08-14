@@ -27,7 +27,7 @@ from .annotationparser import (ANN_ALLOW_NONE, ANN_ARRAY, ANN_ATTRIBUTES, ANN_CL
                                ANN_GET_VALUE_FUNC, ANN_IN, ANN_INOUT, ANN_METHOD, ANN_OUT,
                                ANN_REF_FUNC, ANN_RENAME_TO, ANN_SCOPE, ANN_SET_VALUE_FUNC,
                                ANN_SKIP, ANN_TRANSFER, ANN_TYPE, ANN_UNREF_FUNC, ANN_VALUE,
-                               ANN_VFUNC, ANN_NULLABLE, ANN_OPTIONAL, ANN_NOT)
+                               ANN_VFUNC, ANN_NULLABLE, ANN_OPTIONAL, ANN_NOT, ANN_STATIC_METHOD)
 from .annotationparser import (OPT_ARRAY_FIXED_SIZE, OPT_ARRAY_LENGTH, OPT_ARRAY_ZERO_TERMINATED,
                                OPT_OUT_CALLEE_ALLOCATES, OPT_OUT_CALLER_ALLOCATES,
                                OPT_TRANSFER_CONTAINER, OPT_TRANSFER_FLOATING, OPT_TRANSFER_NONE)
@@ -773,6 +773,9 @@ class MainTransformer(object):
         if ANN_METHOD in block.annotations:
             node.is_method = True
 
+        if ANN_STATIC_METHOD in block.annotations:
+            node.is_static_method = True
+
     def _apply_annotations_alias(self, node, chain):
         block = self._get_block(node)
         self._apply_annotations_annotated(node, block)
@@ -1132,6 +1135,9 @@ method or constructor of some type."""
         return to_underscores_noprefix(name).lower()
 
     def _is_method(self, func, subsymbol):
+        if func.is_static_method:
+            return False
+
         if not func.parameters:
             if func.is_method:
                 message.warn_node(func,
