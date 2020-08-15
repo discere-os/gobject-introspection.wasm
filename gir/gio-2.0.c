@@ -23552,7 +23552,7 @@
 
 
 /**
- * g_file_monitor:
+ * g_file_monitor: (method)
  * @file: input #GFile
  * @flags: a set of #GFileMonitorFlags
  * @cancellable: (nullable): optional #GCancellable object,
@@ -23628,7 +23628,7 @@
 
 
 /**
- * g_file_monitor_file:
+ * g_file_monitor_file: (method)
  * @file: input #GFile
  * @flags: a set of #GFileMonitorFlags
  * @cancellable: (nullable): optional #GCancellable object,

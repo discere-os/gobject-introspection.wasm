@@ -776,6 +776,9 @@ class MainTransformer(object):
         if ANN_STATIC_METHOD in block.annotations:
             node.is_static_method = True
 
+        if ANN_VFUNC in block.annotations:
+            node.is_vfunc = True
+
     def _apply_annotations_alias(self, node, chain):
         block = self._get_block(node)
         self._apply_annotations_annotated(node, block)
@@ -1153,6 +1156,7 @@ method or constructor of some type."""
                     '%s: Methods must have a pointer as their first '
                     'parameter' % (func.symbol, ))
             return False
+
         if target.namespace != self._namespace:
             if func.is_method:
                 message.warn_node(func,
@@ -1175,6 +1179,18 @@ method or constructor of some type."""
             uscored_prefix = self._get_uscored_prefix(func, subsymbol)
             if not subsymbol.startswith(uscored_prefix):
                 return False
+
+        split = self._split_uscored_by_type(subsymbol)
+        if split is not None:
+            (node, funcname) = split
+            if node != target and isinstance(node, (ast.Class, ast.Interface,
+                                   ast.Record, ast.Union,
+                                   ast.Boxed)):
+                if not func.is_method and not func.is_vfunc:
+                    message.warn_node(func,
+                        '%s: Prefix of method mismached with the type of the first'
+                        'parameter (%s %s)' % (func.symbol, node, target))
+                    return False
 
         return True
 
