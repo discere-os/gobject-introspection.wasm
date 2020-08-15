@@ -1189,7 +1189,7 @@ method or constructor of some type."""
                 if not func.is_method and not func.is_vfunc:
                     if not func.is_static_method:
                         message.warn_node(func,
-                            '%s: Prefix of method mismached with the type of the first'
+                            '%s: Prefix of method mismatched with the type of the first'
                             'parameter (%s %s)' % (func.symbol, node, target))
                     return False
 
