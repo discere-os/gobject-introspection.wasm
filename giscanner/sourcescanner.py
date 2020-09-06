@@ -137,6 +137,7 @@ def _evaluate(expr, typedefs):
             pass
         return (ret, None)
     elif isinstance(expr, pycparser.c_ast.Constant) and expr.type == 'char':
+        print (expr, expr.type, expr.value)
         return (ord(expr.value.strip("'")), None)
     elif isinstance(expr, pycparser.c_ast.Cast):
         res, _ = _evaluate(expr.expr, typedefs)
