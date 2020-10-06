@@ -42,7 +42,8 @@ typelibdir = join_paths(get_option('libdir'), 'girepository-1.0')
 install_data(gir_files, install_dir: girdir)
 
 scanner_command = [
-  find_program('g-ir-scanner', native: true),
+  python,
+  find_program('g-ir-scanner', native: true).path(),
   '--output=@OUTPUT@',
   '--no-libtool',
   '--quiet',
