@@ -775,6 +775,8 @@ struct _RegressTestObj
   GObject *bare;
   RegressTestBoxed *boxed;
   GHashTable *hash_table;
+  GArray *array;
+  GArray *array_notransfer;
   GList *list;
   gint8 some_int8;
   float some_float;
