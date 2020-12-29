@@ -4676,6 +4676,16 @@ raise an error.</doc>
           </parameter>
         </parameters>
       </method>
+      <property name="array" writable="1" transfer-ownership="container">
+        <array name="GLib.Array">
+          <type name="gint8"/>
+        </array>
+      </property>
+      <property name="array-notransfer" writable="1" transfer-ownership="none">
+        <array name="GLib.Array">
+          <type name="gint8"/>
+        </array>
+      </property>
       <property name="bare" writable="1" transfer-ownership="none">
         <type name="GObject.Object"/>
       </property>
@@ -4760,6 +4770,16 @@ raise an error.</doc>
           <type name="gpointer" c:type="gpointer"/>
           <type name="gpointer" c:type="gpointer"/>
         </type>
+      </field>
+      <field name="array">
+        <array name="GLib.Array" c:type="GArray*">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+      <field name="array_notransfer">
+        <array name="GLib.Array" c:type="GArray*">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </field>
       <field name="list">
         <type name="GLib.List" c:type="GList*">
