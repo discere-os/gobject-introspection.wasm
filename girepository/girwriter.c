@@ -468,8 +468,8 @@ write_callable_info (const gchar    *namespace,
 
   write_ownership_transfer (g_callable_info_get_caller_owns (info), file);
 
-  if (g_callable_info_may_return_null (info))
-    xml_printf (file, " allow-none=\"1\"");
+  if (!g_callable_info_may_return_null (info))
+    xml_printf (file, " nullable=\"0\"");
 
   if (g_callable_info_skip_return (info))
     xml_printf (file, " skip=\"1\"");

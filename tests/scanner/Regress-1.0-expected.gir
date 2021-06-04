@@ -8232,6 +8232,31 @@ What we're testing here is that the scanner ignores the @a nested inside XML.</d
         <type name="utf8" c:type="char*"/>
       </return-value>
     </function>
+    <function name="test_retval" c:identifier="regress_test_retval">
+      <source-position filename="regress.h" line="1538"/>
+      <return-value transfer-ownership="none" nullable="1">
+        <doc xml:space="preserve"
+             filename="regress.c"
+             line="4692">whatever</doc>
+        <type name="gpointer" c:type="void*"/>
+      </return-value>
+    </function>
+    <function name="test_retval_not_nullable"
+              c:identifier="regress_test_retval_not_nullable">
+      <source-position filename="regress.h" line="1544"/>
+      <return-value transfer-ownership="none" nullable="0">
+        <doc xml:space="preserve" filename="regress.c" line="4714">1</doc>
+        <type name="gpointer" c:type="void*"/>
+      </return-value>
+    </function>
+    <function name="test_retval_nullable"
+              c:identifier="regress_test_retval_nullable">
+      <source-position filename="regress.h" line="1541"/>
+      <return-value transfer-ownership="none" nullable="1">
+        <doc xml:space="preserve" filename="regress.c" line="4703">NULL</doc>
+        <type name="gpointer" c:type="void*"/>
+      </return-value>
+    </function>
     <function name="test_short" c:identifier="regress_test_short">
       <source-position filename="regress.h" line="61"/>
       <return-value transfer-ownership="none">

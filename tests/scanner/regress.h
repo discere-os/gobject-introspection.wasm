@@ -1534,4 +1534,13 @@ void regress_test_array_struct_in_full (RegressTestStructA *arr, gsize len);
 _GI_TEST_EXTERN
 void regress_test_array_struct_in_none (RegressTestStructA *arr, gsize len);
 
+_GI_TEST_EXTERN
+void* regress_test_retval (void);
+
+_GI_TEST_EXTERN
+void* regress_test_retval_nullable (void);
+
+_GI_TEST_EXTERN
+void* regress_test_retval_not_nullable (void);
+
 #endif /* __GITESTTYPES_H__ */

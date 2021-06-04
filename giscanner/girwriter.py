@@ -255,6 +255,8 @@ class GIRWriter(XMLWriter):
             attrs.append(('skip', '1'))
         if return_.nullable and not return_.not_nullable:
             attrs.append(('nullable', '1'))
+        elif return_.not_nullable and not return_.nullable:
+            attrs.append(('nullable', '0'))
         with self.tagcontext('return-value', attrs):
             self._write_generic(return_)
             self._write_type(return_.type, parent=parent)
