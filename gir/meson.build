@@ -35,8 +35,11 @@ gir_files = [
   'xlib-2.0.gir',
   'xfixes-4.0.gir',
   'xrandr-1.3.gir',
-  'win32-1.0.gir',
 ]
+
+if host_system == 'windows'
+  gir_files += 'win32-1.0.gir'
+endif
 
 typelibdir = join_paths(get_option('libdir'), 'girepository-1.0')
 install_data(gir_files, install_dir: girdir)
