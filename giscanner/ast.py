@@ -747,6 +747,8 @@ class Function(Callable):
         Callable.__init__(self, name, retval, parameters, throws)
         self.symbol = symbol
         self.is_method = False
+        self.is_static_method = False
+        self.is_vfunc = False
         self.is_constructor = False
         self.shadowed_by = None         # C symbol string
         self.shadows = None             # C symbol string

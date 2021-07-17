@@ -200,6 +200,7 @@ ANN_GET_VALUE_FUNC = 'get-value-func'
 ANN_IN = 'in'
 ANN_INOUT = 'inout'
 ANN_METHOD = 'method'
+ANN_STATIC_METHOD = 'static-method'
 ANN_NULLABLE = 'nullable'
 ANN_OPTIONAL = 'optional'
 ANN_NOT = 'not'
@@ -230,6 +231,7 @@ GI_ANNS = [ANN_ALLOW_NONE,
            ANN_IN,
            ANN_INOUT,
            ANN_METHOD,
+           ANN_STATIC_METHOD,
            ANN_OUT,
            ANN_REF_FUNC,
            ANN_RENAME_TO,
@@ -860,6 +862,18 @@ class GtkDocAnnotatable(object):
 
         self._validate_annotation(position, ann_name, options, exact_n_options=0)
 
+    def _do_validate_static_method(self, position, ann_name, options):
+        '''
+        Validate the ``(static-method)`` annotation.
+
+        :param position: :class:`giscanner.message.Position` of the line in the source file
+                         containing the annotation to be validated
+        :param ann_name: name of the annotation holding the options to validate
+        :param options: annotation options to validate
+        '''
+
+        self._validate_annotation(position, ann_name, options, exact_n_options=0)
+
     def _do_validate_nullable(self, position, ann_name, options):
         '''
         Validate the ``(nullable)`` annotation.
@@ -1093,7 +1107,7 @@ class GtkDocCommentBlock(GtkDocAnnotatable):
 
     #: Valid annotation names for the GTK-Doc comment block identifier part.
     valid_annotations = (ANN_ATTRIBUTES, ANN_CONSTRUCTOR, ANN_FOREIGN, ANN_GET_VALUE_FUNC,
-                         ANN_METHOD, ANN_REF_FUNC, ANN_RENAME_TO, ANN_SET_VALUE_FUNC,
+                         ANN_METHOD, ANN_STATIC_METHOD, ANN_REF_FUNC, ANN_RENAME_TO, ANN_SET_VALUE_FUNC,
                          ANN_SKIP, ANN_TRANSFER, ANN_TYPE, ANN_UNREF_FUNC, ANN_VALUE, ANN_VFUNC)
 
     def __init__(self, name, position=None):
