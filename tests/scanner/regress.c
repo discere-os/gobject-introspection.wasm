@@ -2109,6 +2109,8 @@ enum
   PROP_TEST_OBJ_BARE = 1,
   PROP_TEST_OBJ_BOXED,
   PROP_TEST_OBJ_HASH_TABLE,
+  PROP_TEST_OBJ_ARRAY,
+  PROP_TEST_OBJ_ARRAY_NOTRANSFER,
   PROP_TEST_OBJ_LIST,
   PROP_TEST_OBJ_PPTRARRAY,
   PROP_TEST_OBJ_HASH_TABLE_OLD,
@@ -2149,6 +2151,16 @@ regress_test_obj_set_property (GObject      *object,
       if (self->hash_table)
         g_hash_table_unref (self->hash_table);
       self->hash_table = g_hash_table_ref (g_value_get_boxed (value));
+      break;
+
+    case PROP_TEST_OBJ_ARRAY:
+      g_clear_pointer (&self->array, g_array_unref);
+      self->array = g_value_dup_boxed (value);
+      break;
+
+    case PROP_TEST_OBJ_ARRAY_NOTRANSFER:
+      g_clear_pointer (&self->array_notransfer, g_array_unref);
+      self->array_notransfer = g_value_get_boxed (value);
       break;
 
     case PROP_TEST_OBJ_LIST:
@@ -2224,6 +2236,17 @@ regress_test_obj_get_property (GObject    *object,
       g_value_set_boxed (value, self->hash_table);
       break;
 
+    case PROP_TEST_OBJ_ARRAY:
+      if (self->array != NULL)
+        g_array_ref (self->array);
+
+      g_value_set_boxed (value, self->array);
+      break;
+
+    case PROP_TEST_OBJ_ARRAY_NOTRANSFER:
+      g_value_set_boxed (value, self->array_notransfer);
+      break;
+
     case PROP_TEST_OBJ_LIST:
     case PROP_TEST_OBJ_LIST_OLD:
       g_value_set_pointer (value, self->list);
@@ -2288,6 +2311,8 @@ regress_test_obj_dispose (GObject *gobject)
       self->list = NULL;
     }
 
+  g_clear_pointer (&self->array, g_array_unref);
+  g_clear_pointer (&self->array_notransfer, g_array_unref);
   g_clear_pointer (&self->hash_table, g_hash_table_unref);
   g_clear_pointer (&self->string, g_free);
 
@@ -2643,6 +2668,32 @@ regress_test_obj_class_init (RegressTestObjClass *klass)
                                    pspec);
 
   /**
+   * RegressTestObj:array: (type GLib.Array(gint8)) (transfer container)
+   */
+  pspec = g_param_spec_boxed ("array",
+                              "GArray property",
+                              "A contained GArray",
+                              G_TYPE_ARRAY,
+                              G_PARAM_READWRITE);
+  g_object_class_install_property (gobject_class,
+                                   PROP_TEST_OBJ_ARRAY,
+                                   pspec);
+
+
+  /**
+   * RegressTestObj:array-notransfer: (type GLib.Array(gint8)) (transfer none)
+   */
+  pspec = g_param_spec_boxed ("array-notransfer",
+                              "GArray property without transfer",
+                              "A contained GArray but without trnasfer",
+                              G_TYPE_ARRAY,
+                              G_PARAM_READWRITE);
+  g_object_class_install_property (gobject_class,
+                                   PROP_TEST_OBJ_ARRAY_NOTRANSFER,
+                                   pspec);
+
+
+  /**
    * RegressTestObj:list: (type GLib.List(utf8)) (transfer none)
    */
   pspec = g_param_spec_pointer ("list",
@@ -2799,6 +2850,8 @@ regress_test_obj_init (RegressTestObj *obj)
   obj->bare = NULL;
   obj->boxed = NULL;
   obj->hash_table = NULL;
+  obj->array = NULL;
+  obj->array_notransfer = NULL;
   obj->gtype = G_TYPE_INVALID;
 }
 

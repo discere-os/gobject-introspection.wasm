@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<page id="Regress.TestObj-array-notransfer"
+      type="topic"
+      style="property"
+      xmlns="http://projectmallard.org/1.0/"
+      xmlns:api="http://projectmallard.org/experimental/api/"
+      xmlns:ui="http://projectmallard.org/1.0/ui/">
+  <info>
+    <link xref="Regress.TestObj" group="property" type="guide"/>
+    <title type="link" role="topic">array-notransfer</title>
+  </info>
+  <title>Regress.TestObj:array-notransfer</title>
+  <synopsis><code mime="text/x-python">
+"array-notransfer"             [gint8]                : Read / Write
+  </code></synopsis>
+
+
+</page>

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<page id="Regress.TestObj-array"
+      type="topic"
+      style="property"
+      xmlns="http://projectmallard.org/1.0/"
+      xmlns:api="http://projectmallard.org/experimental/api/"
+      xmlns:ui="http://projectmallard.org/1.0/ui/">
+  <info>
+    <link xref="Regress.TestObj" group="property" type="guide"/>
+    <title type="link" role="topic">array</title>
+  </info>
+  <title>Regress.TestObj.array</title>
+  <synopsis><code mime="text/x-gjs">
+TestObj.array: ByteArray (Read / Write)
+  </code></synopsis>
+
+
+</page>
