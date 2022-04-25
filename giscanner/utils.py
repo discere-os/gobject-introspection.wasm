@@ -324,8 +324,12 @@ class dll_dirs(metaclass=Singleton):
 
     def _add_dll_dir(self, path):
         if path not in self._cached_dll_dirs:
-            self._cached_dll_dirs.append(path)
-            self._cached_added_dll_dirs.append(os.add_dll_directory(path))
+            try:
+                dll_dir = os.add_dll_directory(path)
+                self._cached_added_dll_dirs.append(dll_dir)
+                self._cached_dll_dirs.append(path)
+            except OSError:
+                print("Could not add directory {}".format(path))
 
 
 # monkey patch distutils.cygwinccompiler
