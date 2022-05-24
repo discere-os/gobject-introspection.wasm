@@ -245,10 +245,11 @@ g_arg_info_get_scope (GIArgInfo *info)
  * g_arg_info_get_closure:
  * @info: a #GIArgInfo
  *
- * Obtain the index of the user data argument. This is only valid
- * for arguments which are callbacks.
+ * Obtain the index of the user data argument bound to this callback
+ * or the index of the callback argument owning this user data. For arguments
+ * which are not callbacks or user data, this function returns -1.
  *
- * Returns: index of the user data argument or -1 if there is none
+ * Returns: index of the related argument or -1 if there is none
  */
 gint
 g_arg_info_get_closure (GIArgInfo *info)
