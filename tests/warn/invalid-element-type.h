@@ -85,3 +85,11 @@ GPtrArray* test_unresolved_value_element_type(void);
 // EXPECT:54: Warning: Test: invalid (element-type) for a GPtrArray, must be a pointer
 // EXPECT:65: Warning: Test: test_unresolved_element_type: Unknown type: 'Unresolved'
 // EXPECT:73: Warning: Test: test_unresolved_value_element_type: Unknown type: 'GLib.Value'
+
+
+/**
+ * test_not_optional:
+ * @outvalue: (out) (not optional):
+ */
+
+void test_not_optional(int **outvalue);
