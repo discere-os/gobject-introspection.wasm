@@ -92,8 +92,24 @@ class IntrospectablePass(object):
 
         if (isinstance(node.type, (ast.List, ast.Array))
         and node.type.element_type == ast.TYPE_ANY):
-            self._parameter_warning(parent, node, "Missing (element-type) annotation")
             parent.introspectable = False
+            if (isinstance(parent, ast.Function)
+            and parent.namespace.name == 'GLib'):
+                checked_type = None
+                if isinstance(node, ast.Return):
+                    checked_type = node.type
+                elif parent.is_method and parent.instance_parameter:
+                    checked_type = parent.instance_parameter.type
+                elif parent.parameters:
+                    checked_type = parent.parameters[0].type
+
+                if isinstance(checked_type, (ast.List, ast.Array, ast.Map)):
+                    return
+                elif (checked_type
+                      and checked_type.target_giname in ('GLib.Queue',)):
+                    return
+
+            self._parameter_warning(parent, node, "Missing (element-type) annotation")
             return
 
         if (is_parameter
