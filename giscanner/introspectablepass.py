@@ -48,6 +48,9 @@ class IntrospectablePass(object):
         if isinstance(parent, (ast.VFunction, ast.Callback)):
             return
 
+        if isinstance(parent, ast.Function) and parent.shadowed_by:
+            return
+
         block = None
         if hasattr(parent, 'symbol'):
             prefix = '%s: ' % (parent.symbol, )
