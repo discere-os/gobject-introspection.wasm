@@ -1580,6 +1580,7 @@ object_macro_define
 			g_free (macro->ident);
 			macro->ident = $1;
 			gi_source_scanner_add_symbol (scanner, macro);
+			g_hash_table_insert (scanner->const_table, g_strdup (macro->ident), gi_source_symbol_ref (macro));
 			gi_source_symbol_unref (macro);
 			gi_source_symbol_unref ($2);
 		} else {
