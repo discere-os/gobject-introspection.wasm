@@ -1,3 +1,29 @@
+gir_giscanner_pymod = []
+gir_giscanner_built_files = []
+if not get_option('gi_cross_use_prebuilt_gi')
+  # The right thing to do is just make these dependencies of the
+  # `configure_file` python executable, but that isn't yet supported.
+  gir_giscanner_pymod = giscanner_pymod
+  gir_giscanner_built_files = giscanner_built_files
+endif
+
+# Dependency object used by Meson's GNOME module to allow using
+# 'gobject-introspection-no-typelibs-1.0' internally to generate all the
+# typelibs that will end in the final dependency 'gobject-introspection-1.0'.
+# This uses 'giscanner_pymod' and 'giscanner_pymod' to ensure
+# that giscanner is built before generating the gir targets
+if get_option('build_introspection_data') == true
+  girepo_no_typelibs_dep = declare_dependency(
+    dependencies: [girepo_dep],
+    link_with: gir_giscanner_pymod,
+    sources: gir_giscanner_built_files,
+    variables: {
+      'girdir': meson.current_build_dir() / 'gir',
+    },
+  )
+  meson.override_dependency('gobject-introspection-no-typelibs-1.0', girepo_no_typelibs_dep)
+endif
+
 gir_files = [
   'DBus-1.0.gir',
   'DBusGLib-1.0.gir',
@@ -92,21 +118,22 @@ for f in sorted(glob('@0@')):
   print(f)
 '''
 
-# GLib
-glib_files = []
-glib_command = scanner_command + [
-  '--identifier-prefix=G',
-  '--symbol-prefix=g',
-  '--symbol-prefix=glib',
-  '--c-include=glib.h',
-  '--namespace=GLib',
-  '--nsversion=2.0',
-  '--library=glib-2.0',
-  '--library=gobject-2.0',
+typelibs = []
+
+gnome = import('gnome')
+
+gir_extra_args = [
+  '--accept-unprefixed',
+  '--quiet',
+  '--warn-all',
+  '-D__G_I18N_LIB_H__',
+  '-DGETTEXT_PACKAGE=Dummy',
 ]
 
+# GLib
+glib_files = []
+
 if dep_type == 'pkgconfig'
-  glib_command += ['--external-library', '--pkg=glib-2.0']
   glib_libdir = get_option('gi_cross_pkgconfig_sysroot_path') + glib_dep.get_variable(pkgconfig: 'libdir')
   glib_incdir = get_option('gi_cross_pkgconfig_sysroot_path') + join_paths(glib_dep.get_variable(pkgconfig: 'includedir'), 'glib-2.0')
   glib_libincdir = join_paths(glib_libdir, 'glib-2.0', 'include')
@@ -131,85 +158,11 @@ if dep_type == 'pkgconfig'
     endif
     glib_files += ret.stdout().strip().split('\n')
   endif
-  glib_includes = ['-I' + glib_incdir, '-I' + glib_libincdir]
-  glib_gir_dep = []
+  glib_gir_dep = dependency('glib-2.0')
 elif dep_type == 'internal'
-  # XXX: This is a pile of hacks to allow gobject-introspection to parse the
-  #      GLib source files when GLib is used as a subproject
-  #      Assumes that the builddir layout is 'mirror'
-  #      We should add API to meson to get a specific file from a specific
-  #      subproject
-  # We know exactly what headers will be installed, so just fetch that
   glib_subproject = subproject('glib')
-
-  glibproj_sourcedir = glib_subproject.get_variable('glib_source_dir', join_paths(meson.global_source_root(), subprojdir, 'glib'))
-  glibproj_builddir = glib_subproject.get_variable('glib_build_dir', join_paths(meson.global_build_root(), subprojdir, 'glib'))
-
-  glib_files += glib_subproject.get_variable('glib_types_h')
-
-  # Generated files, relative to the build directory
-  glib_files += [
-    glib_subproject.get_variable('glibconfig_h'),
-    glib_subproject.get_variable('glib_enumtypes_h'),
-  ]
-
-  if giounix_dep.found()
-    glib_files += [
-      # Variable was renamed in 2.79.2
-      # https://gitlab.gnome.org/GNOME/glib/-/commit/1f9e44d6232c3e96caa8a96d9b1cc2c65cf5848c
-      glib_subproject.get_variable('glib_unix_headers')
-    ]
-  endif
-
-  glib_headers = glib_subproject.get_variable('glib_sub_headers')
   glib_files += glib_subproject.get_variable('glib_sources')
-
-  # XXX: Assumes that the builddir layout is 'mirror'
-  glib_libdir = join_paths(glibproj_builddir, 'glib')
-  gobject_libdir = join_paths(glibproj_builddir, 'gobject')
-  gmodule_libdir = join_paths(glibproj_builddir, 'gmodule')
-  gio_libdir = join_paths(glibproj_builddir, 'gio')
-
-  glib_libpaths = [
-    '-L' + glib_libdir,
-    '-L' + gobject_libdir,
-    '-L' + gmodule_libdir,
-    '-L' + gio_libdir,
-  ]
-  # Includes that will be used to compile the scanner executable
-  glib_incdir = join_paths(glibproj_sourcedir, 'glib')
-  gobject_incdir = join_paths(glibproj_sourcedir, 'gobject')
-  gmodule_incdir = join_paths(glibproj_sourcedir, 'gmodule')
-  gio_incdir = join_paths(glibproj_sourcedir, 'gio')
-
-  glib_includes = [
-    '-I' + glibproj_sourcedir,
-    '-I' + glibproj_builddir,
-    '-I' + glib_libdir,
-    '-I' + glib_incdir,
-    '-I' + gobject_incdir,
-    '-I' + gmodule_incdir,
-    '-I' + gio_incdir,
-  ]
-
-  # XXX: We need include paths to all glib dependencies too. We assume that the
-  # dependencies are only libffi and proxy-libintl, and that they are used as
-  # subprojects. In the worst case we add paths to non-existent directories.
-  ffi_incdir = join_paths(meson.global_build_root(), subprojdir, 'libffi', 'include')
-  glib_includes += ['-I' + ffi_incdir]
-  intl_incdir = join_paths(meson.global_source_root(), subprojdir, 'proxy-libintl')
-  glib_includes += ['-I' + intl_incdir]
-
-  ffi_libdir = join_paths(meson.global_build_root(), subprojdir, 'libffi', 'src')
-  intl_libdir = join_paths(meson.global_build_root(), subprojdir, 'proxy-libintl')
-  glib_libpaths = [
-    '-L' + ffi_libdir,
-    '-L' + intl_libdir,
-  ] + glib_libpaths
-
-  glib_command += ['--pkg-export=glib-2.0']
-  glib_command += glib_libpaths
-
+  glib_headers = glib_subproject.get_variable('glib_headers') + glib_subproject.get_variable('glib_sub_headers')
   glib_gir_dep = glib_subproject.get_variable('libglib')
 else
   error('Unknown glib dependency type: ' + dep_type)
@@ -227,46 +180,24 @@ endforeach
 # out of date.
 glib_files += files('glib-2.0.c')
 
-gir_giscanner_pymod = []
-gir_giscanner_built_files = []
-if not get_option('gi_cross_use_prebuilt_gi')
-  # The right thing to do is just make these dependencies of the
-  # `configure_file` python executable, but that isn't yet supported.
-  gir_giscanner_pymod = giscanner_pymod
-  gir_giscanner_built_files = giscanner_built_files
-endif
-
-glib_gir = custom_target('gir-glib',
-  input: glib_files,
-  output: 'GLib-2.0.gir',
-  depends: [gir_giscanner_pymod, glib_gir_dep, gdump],
-  depend_files: gir_giscanner_built_files,
-  env: g_ir_scanner_env,
-  command: glib_command + [
-    '--cflags-begin'] + glib_includes + extra_giscanner_cflags + [
-    '-DGLIB_COMPILATION',
-    '-DGOBJECT_COMPILATION',
-    '-D__G_I18N_LIB_H__',
-    '-DGETTEXT_PACKAGE=Dummy',
-    '--cflags-end',
-    '@INPUT@',
-  ]
+glib_gi_target = gnome.generate_gir(
+  glib_gir_dep,
+  sources: glib_files,
+  namespace: 'GLib',
+  nsversion: '2.0',
+  identifier_prefix: 'G',
+  symbol_prefix: 'g',
+  header: 'glib.h',
+  install: true,
+  extra_args: gir_extra_args + ['-DGLIB_COMPILATION'],
+  export_packages: ['glib-2.0']
 )
-
-uninstalled_gir_files += glib_gir
+typelibs += glib_gi_target[1]
 
 # GObject
 gobject_files = []
-gobject_command = scanner_command + [
-  '--identifier-prefix=G',
-  '--c-include=glib-object.h',
-  '--namespace=GObject',
-  '--nsversion=2.0',
-  '--library=gobject-2.0',
-]
 
 if dep_type == 'pkgconfig'
-  gobject_command += ['--external-library', '--pkg=gobject-2.0']
   # Get the installed header list
   ret = run_command(python, '-c', globber.format(join_paths(glib_incdir, 'gobject', '*.h')), check: true)
   if ret.returncode() != 0
@@ -280,14 +211,12 @@ if dep_type == 'pkgconfig'
     endif
     gobject_files += ret.stdout().strip().split('\n')
   endif
-  gobject_gir_dep = []
+  gobject_gir_dep = dependency('gobject-2.0')
 else
-  gobject_command += ['--pkg-export=gobject-2.0']
   gobject_headers = glib_subproject.get_variable('gobject_install_headers')
   gobject_files += [
     glib_subproject.get_variable('gobject_sources'),
   ]
-  gobject_command += glib_libpaths
   gobject_gir_dep = glib_subproject.get_variable('libgobject')
 endif
 
@@ -303,45 +232,31 @@ endforeach
 # out of date.
 gobject_files += files('gobject-2.0.c')
 
-gobject_gir = custom_target('gir-gobject',
-  input: gobject_files,
-  output: 'GObject-2.0.gir',
-  depends: [glib_gir, gir_giscanner_pymod, gobject_gir_dep, gdump],
-  depend_files: gir_giscanner_built_files,
-  env: g_ir_scanner_env,
-  command: gobject_command + [
-    '--include-uninstalled=' + glib_gir.full_path(),
-    '--cflags-begin'] + glib_includes + extra_giscanner_cflags + [
-    '-DGLIB_COMPILATION',
-    '-DGOBJECT_COMPILATION',
-    '--cflags-end',
-    '@INPUT@',
-  ]
+gobject_gi_target = gnome.generate_gir(
+  gobject_gir_dep,
+  sources: gobject_files,
+  namespace: 'GObject',
+  nsversion: '2.0',
+  identifier_prefix: 'G',
+  symbol_prefix: 'g',
+  header: 'glib-object.h',
+  install: true,
+  includes: [glib_gi_target[0]],
+  extra_args: gir_extra_args + ['-DGLIB_COMPILATION', '-DGOBJECT_COMPILATION'],
+  export_packages: ['gobject-2.0']
 )
-
-uninstalled_gir_files += gobject_gir
+typelibs += gobject_gi_target[1]
 
 # GModule
 gmodule_files = []
-gmodule_command = scanner_command + [
-  '--identifier-prefix=G',
-  '--symbol-prefix=g',
-  '--c-include=gmodule.h',
-  '--namespace=GModule',
-  '--nsversion=2.0',
-  '--library=gmodule-2.0',
-]
 
 if dep_type == 'pkgconfig'
-  gmodule_command += ['--external-library', '--pkg=gmodule-2.0']
   gmodule_files += join_paths(glib_incdir, 'gmodule.h')
   if glib_srcdir != ''
     gmodule_files += join_paths(glib_srcdir, 'gmodule', 'gmodule.c')
   endif
-  gmodule_gir_dep = []
+  gmodule_gir_dep = dependency('gmodule-2.0')
 else
-  gmodule_command += ['--pkg-export=gmodule-2.0']
-  gmodule_command += glib_libpaths
   gmodule_files += [
     glib_subproject.get_variable('gmodule_h'),
     glib_subproject.get_variable('gmodule_c'),
@@ -355,34 +270,25 @@ endif
 # out of date.
 gmodule_files += files('gmodule-2.0.c')
 
-uninstalled_gir_files += custom_target('gir-gmodule',
-  input: gmodule_files,
-  output: 'GModule-2.0.gir',
-  depends: [glib_gir, gir_giscanner_pymod, gmodule_gir_dep, gdump],
-  depend_files: gir_giscanner_built_files,
-  env: g_ir_scanner_env,
-  command: gmodule_command + [
-    '--include-uninstalled=' + glib_gir.full_path(),
-    '--cflags-begin'] + glib_includes + extra_giscanner_cflags + [
-    '-DGMODULE_COMPILATION',
-    '--cflags-end',
-    '@INPUT@',
-  ]
+gmodule_gi_target = gnome.generate_gir(
+  gobject_gir_dep,
+  sources: gmodule_files,
+  namespace: 'GModule',
+  nsversion: '2.0',
+  identifier_prefix: 'G',
+  symbol_prefix: 'g',
+  header: 'gmodule.h',
+  install: true,
+  includes: [glib_gi_target[0], gobject_gi_target[0]],
+  extra_args: gir_extra_args + ['-DGMODULE_COMPILATION'],
+  export_packages: ['gmodule-2.0']
 )
+typelibs += gmodule_gi_target[1]
 
 ## Gio
 gio_files = []
-gio_command = scanner_command + [
-  '--identifier-prefix=G',
-  '--symbol-prefix=g',
-  '--c-include=gio/gio.h',
-  '--namespace=Gio',
-  '--nsversion=2.0',
-  '--library=gio-2.0',
-]
 
 if dep_type == 'pkgconfig'
-  gio_command += ['--external-library', '--pkg=gio-2.0']
   # Get the installed header list
   ret = run_command(python, '-c', globber.format(join_paths(glib_incdir, 'gio', '*.h')), check: true)
   if ret.returncode() != 0
@@ -399,30 +305,30 @@ if dep_type == 'pkgconfig'
     endif
     gio_files += ret.stdout().strip().split('\n')
   endif
-  gio_gir_dep = []
+  gio_gir_dep = dependency('gio-2.0')
 else
-  gio_command += ['--pkg-export=gio-2.0']
   gio_headers = glib_subproject.get_variable('gio_headers')
+  gio_sources = glib_subproject.get_variable('gio_sources')
+  foreach f : gio_sources
+    hstr = '@0@'.format(f)
+    # Filter out files with private API
+    if not hstr.contains('xdp-dbus')
+      gio_files += f
+    endif
+  endforeach
   gio_files += [
-    glib_subproject.get_variable('gio_sources'),
     glib_subproject.get_variable('gioenumtypes_h'),
     glib_subproject.get_variable('gnetworking_h'),
   ]
-  gio_command += glib_libpaths
   gio_gir_dep = glib_subproject.get_variable('libgio')
 endif
 
-foreach h : gio_headers
-  hstr = '@0@'.format(h)
-  if not hstr.endswith('autocleanups.h')
-    gio_files += h
-  endif
-endforeach
-
+gio_gi_headers = ['gio/gio.h']
+gio_gi_export_packages = ['gio-2.0']
 if giounix_dep.found()
   dep_type = giounix_dep.type_name()
+  gio_gi_export_packages += ['gio-unix-2.0']
   if dep_type == 'pkgconfig'
-    gio_command += ['--pkg=gio-unix-2.0']
     giounix_includedir = get_option('gi_cross_pkgconfig_sysroot_path') + join_paths(giounix_dep.get_variable(pkgconfig: 'includedir'), 'gio-unix-2.0')
     # Get the installed gio-unix header list
     ret = run_command(python, '-c', globber.format(join_paths(giounix_includedir, 'gio', '*.h')), check: true)
@@ -431,7 +337,6 @@ if giounix_dep.found()
     endif
     giounix_headers = ret.stdout().strip().split('\n')
   else
-    gio_command += ['--pkg-export=gio-unix-2.0']
     giounix_headers = glib_subproject.get_variable('gio_unix_include_headers')
   endif
   # No filtering needed
@@ -441,103 +346,54 @@ if giounix_dep.found()
   foreach header : giounix_headers
     hstr = '@0@'.format(header)
     hbase = hstr.split('/')[-1]
-    gio_command += '--c-include=gio/@0@'.format(hbase)
+    gio_gi_headers += 'gio/@0@'.format(hbase)
   endforeach
 endif
+
+foreach h : gio_headers
+  hstr = '@0@'.format(h)
+  if not hstr.endswith('autocleanups.h')
+    gio_files += h
+  endif
+endforeach
+
 
 # NOTE: Always add this last so that we prefer the annotations in the sources
 # (if they are available) since it contains 'backup' annotations that can be
 # out of date.
 gio_files += files('gio-2.0.c')
 
-gio_gir = custom_target('gir-gio',
-  input: gio_files,
-  output: 'Gio-2.0.gir',
-  depends: [gobject_gir, gir_giscanner_pymod, gio_gir_dep, gdump],
-  depend_files: gir_giscanner_built_files,
-  env: g_ir_scanner_env,
-  command: gio_command + [
-    '--include-uninstalled=' + gobject_gir.full_path(),
-    '--cflags-begin'] + glib_includes + extra_giscanner_cflags + [
-    '-DGIO_COMPILATION',
-    '-DG_SETTINGS_ENABLE_BACKEND',
-    '--cflags-end',
-    '@INPUT@',
-  ]
+gio_gi_target = gnome.generate_gir(
+  gio_gir_dep,
+  sources: gio_files,
+  namespace: 'Gio',
+  nsversion: '2.0',
+  identifier_prefix: 'G',
+  symbol_prefix: 'g',
+  header: gio_gi_headers,
+  install: true,
+  includes: [glib_gi_target[0], gobject_gi_target[0], gmodule_gi_target[0]],
+  extra_args: gir_extra_args + ['-DGIO_COMPILATION', '-DG_SETTINGS_ENABLE_BACKEND'],
+  export_packages: gio_gi_export_packages
 )
-
-uninstalled_gir_files += gio_gir
+typelibs += gio_gi_target[1]
 
 # GIRepository
 
-girepository_command = scanner_command + [
-  '--identifier-prefix=GI',
-  '--symbol-prefix=g',
-  '--symbol-prefix=gi',
-  '--c-include=girepository.h',
-  '--namespace=GIRepository',
-  '--nsversion=2.0',
-  '--library=girepository-1.0',
-  '--pkg-export=gobject-introspection-1.0',
-  '-L' + meson.current_build_dir() + '/../girepository',
-]
-
-if dep_type != 'pkgconfig'
-  girepository_command += glib_libpaths
-endif
-
-gir_files += custom_target('gir-girepository',
-  input: girepo_gir_sources,
-  output: 'GIRepository-2.0.gir',
-  depends: [gobject_gir, gir_giscanner_pymod, girepo_lib, gdump],
-  depend_files: gir_giscanner_built_files,
+girepository_gi_target = gnome.generate_gir(
+  gio_gir_dep,
+  sources: girepo_gir_sources,
+  namespace: 'GIRepository',
+  nsversion: '2.0',
+  identifier_prefix: 'G',
+  symbol_prefix: ['g', 'gi'],
+  header: ['girepository.h'],
   install: true,
-  install_dir: girdir,
-  env: g_ir_scanner_env,
-  command: girepository_command + [
-    '--include-uninstalled=' + gobject_gir.full_path(),
-    '--cflags-begin'] + glib_includes + extra_giscanner_cflags + [
-    '-I' + meson.current_source_dir() + '/../girepository',
-    '-I' + meson.current_build_dir() + '/../girepository',
-    '-DGI_COMPILATION',
-    '--cflags-end',
-    '@INPUT@',
-  ]
+  includes: [glib_gi_target[0], gobject_gi_target[0]],
+  extra_args: gir_extra_args + ['-DGI_COMPILATION'],
+  export_packages: ['gobject-introspection-1.0']
 )
-
-typelibs = []
-if get_option('gi_cross_binary_wrapper') != ''
-  gircompiler_command = [get_option('gi_cross_binary_wrapper'), gircompiler.full_path(), ]
-else
-  gircompiler_command = [gircompiler, ]
-endif
-
-gircompiler_command += [
-  '-o', '@OUTPUT@',
-  '@INPUT@',
-  '--includedir', meson.current_build_dir(),
-  '--includedir', meson.current_source_dir(),
-]
-
-foreach gir: gir_files
-  typelibs += custom_target('generate-typelib-@0@'.format(gir).underscorify(),
-    input: gir,
-    output: '@BASENAME@.typelib',
-    depends: [gobject_gir, gircompiler, ],
-    command: gircompiler_command,
-    install: true,
-    install_dir: typelibdir,
-  )
-endforeach
-
-foreach gir: uninstalled_gir_files
-  typelibs += custom_target('generate-typelib-@0@'.format(gir).underscorify(),
-    input: gir,
-    output: '@BASENAME@.typelib',
-    depends: [gobject_gir, gircompiler, ],
-    command: gircompiler_command,
-  )
-endforeach
+typelibs += girepository_gi_target[1]
 
 rnc2rng = find_program('rnc2rng', native: true, required: false)
 if rnc2rng.found()
