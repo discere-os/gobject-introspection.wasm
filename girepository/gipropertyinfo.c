@@ -73,6 +73,9 @@ g_property_info_get_flags (GIPropertyInfo *info)
   if (blob->construct_only)
     flags = flags | G_PARAM_CONSTRUCT_ONLY;
 
+  if (blob->deprecated)
+    flags = flags | G_PARAM_DEPRECATED;
+
   return flags;
 }
 
