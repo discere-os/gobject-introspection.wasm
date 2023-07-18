@@ -183,7 +183,13 @@ class GIRWriter(XMLWriter):
             attrs.append(('deprecated', '1'))
 
         if node.deprecated:
-            attrs.append(('deprecated-version', node.deprecated))
+            if isinstance(node, ast.Property) and not isinstance(node.deprecated, str):
+                # Properties may be marked as deprecated using flags, in such
+                # case we don't have any version information, but still it's
+                # relevant to provide this to bindings
+                attrs.append(('deprecated-version', 'unavailable'))
+            else:
+                attrs.append(('deprecated-version', node.deprecated))
 
         if node.stability:
             attrs.append(('stability', node.stability))
