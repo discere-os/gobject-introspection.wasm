@@ -113,6 +113,44 @@ fedora-x86_64-no-introspection-data:
       - "${CI_PROJECT_DIR}/_build/meson-logs"
       - public
 
+fedora-x86_64-no-py-tools:
+  stage: build
+  variables:
+    CCACHE_BASEDIR: "${CI_PROJECT_DIR}"
+    CCACHE_DIR: "${CI_PROJECT_DIR}/_ccache"
+    EXTRA_MESON_FLAGS: "-Dbuild_introspection_data=false -Dbuild_python_tools=false -Dwerror=true"
+  script:
+    - meson setup ${COMMON_MESON_FLAGS} ${EXTRA_MESON_FLAGS} _build .
+    - meson compile -C _build
+    - meson test -C _build --print-errorlogs --suite=gobject-introspection --no-suite=glib
+  except:
+    - tags
+  artifacts:
+    when: always
+    name: "gi-_${CI_COMMIT_REF_NAME}"
+    paths:
+      - "${CI_PROJECT_DIR}/_build/meson-logs"
+      - public
+
+fedora-x86_64-only-py-tools:
+  stage: build
+  variables:
+    CCACHE_BASEDIR: "${CI_PROJECT_DIR}"
+    CCACHE_DIR: "${CI_PROJECT_DIR}/_ccache"
+    EXTRA_MESON_FLAGS: "-Dbuild_introspection_data=false -Dbuild_library_and_c_tools=false -Dwerror=true"
+  script:
+    - meson setup ${COMMON_MESON_FLAGS} ${EXTRA_MESON_FLAGS} _build .
+    - meson compile -C _build
+    - meson test -C _build --print-errorlogs --suite=gobject-introspection --no-suite=glib
+  except:
+    - tags
+  artifacts:
+    when: always
+    name: "gi-_${CI_COMMIT_REF_NAME}"
+    paths:
+      - "${CI_PROJECT_DIR}/_build/meson-logs"
+      - public
+
 fedora-x86_64-python3.6:
   stage: build
   variables:
