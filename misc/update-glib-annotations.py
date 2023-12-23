@@ -13,13 +13,15 @@ import subprocess
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 SRC_DIR = os.path.realpath(os.path.join(SCRIPT_DIR, ".."))
 
+gi_build_dir = None
+
 
 def get_build_dir():
-    build_dir = os.path.join(SRC_DIR, "_build")
+    build_dir = gi_build_dir if gi_build_dir else os.path.join(SRC_DIR, "_build")
     if not os.path.isdir(build_dir):
         raise SystemExit(
             "build dir not found: "
-            "build with meson in %r first" % build_dir)
+            "build with meson in %r first, or specify a build dir" % build_dir)
     return build_dir
 
 
@@ -63,11 +65,15 @@ def update_module(module_name, glib_src_dir, target_path):
 
 
 def main(argv):
-    if len(argv) != 2:
-        raise SystemExit("only pass the glib src dir")
+    global gi_build_dir
+
+    if len(argv) < 2 or len(argv) > 3:
+        raise SystemExit(f"Usage {sys.argv[0]} glib-source-dir [gi-build-dir]")
     glib_src_dir = argv[1]
     if not os.path.exists(os.path.join(glib_src_dir, "glib.doap")):
         raise SystemExit("%s isn't the glib source dir" % glib_src_dir)
+    if len(argv) > 2:
+        gi_build_dir = argv[2]
 
     print("Using source directory: '%s' build directory: '%s'" % (
         glib_src_dir, get_build_dir()))
