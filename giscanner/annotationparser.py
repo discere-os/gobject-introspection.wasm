@@ -285,8 +285,10 @@ OUT_OPTIONS = [OPT_OUT_CALLEE_ALLOCATES,
 
 # (not) annotation options
 OPT_NOT_NULLABLE = 'nullable'
+OPT_NOT_OPTIONAL = 'optional'
 
-NOT_OPTIONS = [OPT_NOT_NULLABLE]
+NOT_OPTIONS = [OPT_NOT_NULLABLE,
+               OPT_NOT_OPTIONAL]
 
 # (scope) annotation options
 OPT_SCOPE_ASYNC = 'async'

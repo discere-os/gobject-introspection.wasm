@@ -14,6 +14,8 @@ gi_versions = meson.project_version().split('.')
 build_root = meson.current_build_dir()
 source_root = meson.current_source_dir()
 
+debug_build = get_option('buildtype').startswith('debug')
+
 configinc = include_directories('.')
 
 pymod = import('python')

@@ -51,7 +51,7 @@ scanner_command = [
   find_program('g-ir-scanner', native: true),
   '--output=@OUTPUT@',
   '--no-libtool',
-  '--quiet',
+  debug_build ? ['--warn-all'] : [],
   '--reparse-validate',
   '--add-include-path', join_paths(meson.current_build_dir()),
   '--add-include-path', join_paths(meson.current_source_dir()),
