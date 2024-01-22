@@ -4931,3 +4931,35 @@ regress_test_array_struct_in_none (RegressTestStructA *arr, gsize len)
   g_assert_cmpint (arr[2].some_int, ==, 303);
 }
 
+/**
+ * regress_test_retval:
+ *
+ * Returns: whatever
+ */
+void *
+regress_test_retval (void)
+{
+  return NULL;
+}
+
+/**
+ * regress_test_retval_nullable:
+ *
+ * Returns: (nullable): NULL
+ */
+void *
+regress_test_retval_nullable (void)
+{
+  return NULL;
+}
+
+/**
+ * regress_test_retval_not_nullable:
+ *
+ * Returns: (not nullable): 1
+ */
+void *
+regress_test_retval_not_nullable (void)
+{
+  return (void*)1;
+}
