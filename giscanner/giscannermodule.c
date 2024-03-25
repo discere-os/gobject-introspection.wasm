@@ -93,10 +93,7 @@ pygi_source_symbol_new (GISourceSymbol *symbol)
   PyGISourceSymbol *self;
 
   if (symbol == NULL)
-    {
-      Py_INCREF (Py_None);
-      return Py_None;
-    }
+    Py_RETURN_NONE;
 
   self = (PyGISourceSymbol *)PyObject_New (PyGISourceSymbol,
 					   &PyGISourceSymbol_Type);
@@ -131,10 +128,7 @@ symbol_get_ident (PyGISourceSymbol *self,
 {
 
   if (!self->symbol->ident)
-    {
-      Py_INCREF(Py_None);
-      return Py_None;
-    }
+    Py_RETURN_NONE;
 
   return PyUnicode_FromString (self->symbol->ident);
 }
@@ -151,10 +145,7 @@ symbol_get_const_int (PyGISourceSymbol *self,
 		      void             *context)
 {
   if (!self->symbol->const_int_set)
-    {
-      Py_INCREF(Py_None);
-      return Py_None;
-    }
+    Py_RETURN_NONE;
 
   if (self->symbol->const_int_is_unsigned)
     return PyLong_FromUnsignedLongLong ((unsigned long long)self->symbol->const_int);
@@ -167,10 +158,8 @@ symbol_get_const_double (PyGISourceSymbol *self,
                          void             *context)
 {
   if (!self->symbol->const_double_set)
-    {
-      Py_INCREF(Py_None);
-      return Py_None;
-    }
+    Py_RETURN_NONE;
+
   return PyFloat_FromDouble (self->symbol->const_double);
 }
 
@@ -179,10 +168,7 @@ symbol_get_const_string (PyGISourceSymbol *self,
 			 void             *context)
 {
   if (!self->symbol->const_string)
-    {
-      Py_INCREF(Py_None);
-      return Py_None;
-    }
+    Py_RETURN_NONE;
 
   return PyUnicode_FromString (self->symbol->const_string);
 }
@@ -192,10 +178,7 @@ symbol_get_const_boolean (PyGISourceSymbol *self,
 			  void             *context)
 {
   if (!self->symbol->const_boolean_set)
-    {
-      Py_INCREF(Py_None);
-      return Py_None;
-    }
+    Py_RETURN_NONE;
 
   return PyBool_FromLong (self->symbol->const_boolean);
 }
@@ -205,10 +188,7 @@ symbol_get_source_filename (PyGISourceSymbol *self,
                             void             *context)
 {
   if (!self->symbol->source_filename)
-    {
-      Py_INCREF(Py_None);
-      return Py_None;
-    }
+    Py_RETURN_NONE;
 
   return PyUnicode_FromString (self->symbol->source_filename);
 }
@@ -242,10 +222,7 @@ pygi_source_type_new (GISourceType *type)
   PyGISourceType *self;
 
   if (type == NULL)
-    {
-      Py_INCREF (Py_None);
-      return Py_None;
-    }
+    Py_RETURN_NONE;
 
   self = (PyGISourceType *)PyObject_New (PyGISourceType,
 					 &PyGISourceType_Type);
@@ -286,10 +263,7 @@ type_get_name (PyGISourceType *self,
 	       void           *context)
 {
   if (!self->type->name)
-    {
-      Py_INCREF (Py_None);
-      return Py_None;
-    }
+    Py_RETURN_NONE;
 
   return PyUnicode_FromString (self->type->name);
 }
@@ -373,8 +347,7 @@ pygi_source_scanner_append_filename (PyGISourceScanner *self,
   file = g_file_new_for_path (filename);
   g_hash_table_add (self->scanner->files, file);
 
-  Py_INCREF (Py_None);
-  return Py_None;
+  Py_RETURN_NONE;
 }
 
 static PyObject *
@@ -426,8 +399,7 @@ pygi_source_scanner_parse_macros (PyGISourceScanner *self,
   gi_source_scanner_parse_macros (self->scanner, filenames);
   g_list_free_full (filenames, g_free);
 
-  Py_INCREF (Py_None);
-  return Py_None;
+  Py_RETURN_NONE;
 }
 
 static PyObject *
@@ -445,8 +417,7 @@ pygi_source_scanner_parse_file (PyGISourceScanner *self,
       return NULL;
     }
 
-  Py_INCREF (Py_None);
-  return Py_None;
+  Py_RETURN_NONE;
 }
 
 static PyObject *
@@ -468,8 +439,7 @@ pygi_source_scanner_lex_filename (PyGISourceScanner *self,
   file = g_file_new_for_path (filename);
   g_hash_table_add (self->scanner->files, file);
 
-  Py_INCREF (Py_None);
-  return Py_None;
+  Py_RETURN_NONE;
 }
 
 static PyObject *
@@ -483,8 +453,7 @@ pygi_source_scanner_set_macro_scan (PyGISourceScanner *self,
 
   gi_source_scanner_set_macro_scan (self->scanner, macro_scan);
 
-  Py_INCREF (Py_None);
-  return Py_None;
+  Py_RETURN_NONE;
 }
 
 static PyObject *
