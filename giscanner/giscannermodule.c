@@ -441,7 +441,7 @@ pygi_source_scanner_parse_file (PyGISourceScanner *self,
 
   if (!gi_source_scanner_parse_file (self->scanner, filename))
     {
-      g_print ("Something went wrong during parsing.\n");
+      PyErr_SetString (PyExc_RuntimeError, "Something went wrong during parsing.");
       return NULL;
     }
 
@@ -462,7 +462,7 @@ pygi_source_scanner_lex_filename (PyGISourceScanner *self,
   self->scanner->current_file = g_file_new_for_path (filename);
   if (!gi_source_scanner_lex_filename (self->scanner, filename))
     {
-      g_print ("Something went wrong during lexing.\n");
+      PyErr_SetString (PyExc_RuntimeError, "Something went wrong during lexing.");
       return NULL;
     }
   file = g_file_new_for_path (filename);
@@ -547,6 +547,7 @@ pygi_source_scanner_get_comments (PyGISourceScanner *self, G_GNUC_UNUSED PyObjec
           comment_obj = PyUnicode_FromString (comment->comment);
           if (!comment_obj)
             {
+              PyErr_Clear ();
               g_print ("Comment is not valid Unicode in %s line %d\n", comment->filename, comment->line);
               Py_INCREF (Py_None);
               comment_obj = Py_None;
