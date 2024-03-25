@@ -35,9 +35,9 @@ _GI_EXTERN PyMODINIT_FUNC PyInit__giscanner(void);
 static const PyMethodDef _Py##cname##_methods[num_methods] G_GNUC_UNUSED;    \
 PyTypeObject Py##cname##_Type = {             \
     PyVarObject_HEAD_INIT(NULL, 0)            \
-    "scanner." name,                          \
-    sizeof(ctype),                            \
-    0                                         \
+    .tp_name = "scanner." name,               \
+    .tp_basicsize = sizeof(ctype),            \
+    .tp_itemsize = 0,                         \
 }
 
 #if PY_VERSION_HEX < 0x030900A4
@@ -206,20 +206,20 @@ symbol_get_source_filename (PyGISourceSymbol *self,
 
 static const PyGetSetDef _PyGISourceSymbol_getsets[] = {
   /* int ref_count; */
-  { "type", (getter)symbol_get_type, NULL, NULL},
+  { .name = "type", .get = (getter)symbol_get_type, },
   /* int id; */
-  { "ident", (getter)symbol_get_ident, NULL, NULL},
-  { "base_type", (getter)symbol_get_base_type, NULL, NULL},
+  { .name = "ident", .get = (getter)symbol_get_ident, },
+  { .name = "base_type", .get = (getter)symbol_get_base_type, },
   /* gboolean const_int_set; */
-  { "const_int", (getter)symbol_get_const_int, NULL, NULL},
+  { .name = "const_int", .get = (getter)symbol_get_const_int, },
   /* gboolean const_double_set; */
-  { "const_double", (getter)symbol_get_const_double, NULL, NULL},
-  { "const_string", (getter)symbol_get_const_string, NULL, NULL},
+  { .name = "const_double", .get = (getter)symbol_get_const_double, },
+  { .name = "const_string", .get = (getter)symbol_get_const_string, },
   /* gboolean const_boolean_set; */
-  { "const_boolean", (getter)symbol_get_const_boolean, NULL, NULL},
-  { "source_filename", (getter)symbol_get_source_filename, NULL, NULL},
-  { "line", (getter)symbol_get_line, NULL, NULL},
-  { "private", (getter)symbol_get_private, NULL, NULL},
+  { .name = "const_boolean", .get = (getter)symbol_get_const_boolean, },
+  { .name = "source_filename", .get = (getter)symbol_get_source_filename, },
+  { .name = "line", .get = (getter)symbol_get_line, },
+  { .name = "private", .get = (getter)symbol_get_private, },
   { 0 }
 };
 
@@ -323,14 +323,14 @@ type_get_is_bitfield (PyGISourceType *self,
 }
 
 static const PyGetSetDef _PyGISourceType_getsets[] = {
-  { "type", (getter)type_get_type, NULL, NULL},
-  { "storage_class_specifier", (getter)type_get_storage_class_specifier, NULL, NULL},
-  { "type_qualifier", (getter)type_get_type_qualifier, NULL, NULL},
-  { "function_specifier", (getter)type_get_function_specifier, NULL, NULL},
-  { "name", (getter)type_get_name, NULL, NULL},
-  { "base_type", (getter)type_get_base_type, NULL, NULL},
-  { "child_list", (getter)type_get_child_list, NULL, NULL},
-  { "is_bitfield", (getter)type_get_is_bitfield, NULL, NULL},
+  { .name = "type", .get = (getter)type_get_type, },
+  { .name = "storage_class_specifier", .get = (getter)type_get_storage_class_specifier, },
+  { .name = "type_qualifier", .get = (getter)type_get_type_qualifier, },
+  { .name = "function_specifier", .get = (getter)type_get_function_specifier, },
+  { .name = "name", .get = (getter)type_get_name, },
+  { .name = "base_type", .get = (getter)type_get_base_type, },
+  { .name = "child_list", .get = (getter)type_get_child_list, },
+  { .name = "is_bitfield", .get = (getter)type_get_is_bitfield, },
   { 0 }
 };
 
@@ -585,20 +585,14 @@ static const PyMethodDef _PyGISourceScanner_methods[] = {
 
 static struct PyModuleDef moduledef = {
 	PyModuleDef_HEAD_INIT,
-	NULL, /* m_name */
-	NULL, /* m_doc */
-	0,
-	NULL,
-	NULL
+	.m_name = "giscanner._giscanner",
 };
 
 
 PyMODINIT_FUNC PyInit__giscanner(void)
 {
     PyObject *m, *d;
-    const char *module_name = "giscanner._giscanner";
 
-    moduledef.m_name = module_name;
     m = PyModule_Create (&moduledef);
     d = PyModule_GetDict (m);
 
