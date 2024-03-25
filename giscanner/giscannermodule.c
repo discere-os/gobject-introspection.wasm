@@ -38,21 +38,30 @@ PyTypeObject Py##cname##_Type = {             \
     .tp_name = "scanner." name,               \
     .tp_basicsize = sizeof(ctype),            \
     .tp_itemsize = 0,                         \
+    .tp_alloc = PyType_GenericAlloc,          \
+    .tp_new = PyType_GenericNew,              \
+    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, \
 }
 
-#if PY_VERSION_HEX < 0x030900A4
-#  define Py_SET_TYPE(obj, type) ((Py_TYPE(obj) = (type)), (void)0)
-#endif
+#if PY_VERSION_HEX < 0x03090000
+static inline int
+PyModule_AddType(PyObject *module, PyTypeObject *type)
+{
+  if (PyType_Ready (type) < 0)
+    return -1;
 
-#define REGISTER_TYPE(d, name, type)	      \
-    Py_SET_TYPE(&type, &PyType_Type);         \
-    type.tp_alloc = PyType_GenericAlloc;      \
-    type.tp_new = PyType_GenericNew;          \
-    type.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE; \
-    if (PyType_Ready (&type))                 \
-        return NULL;              \
-    PyDict_SetItemString (d, name, (PyObject *)&type); \
-    Py_INCREF (&type);
+  const char *name = _PyType_Name(type);
+
+  Py_INCREF (type);
+  if (PyModule_AddObject (module, name, (PyObject *)type) < 0)
+    {
+      Py_DECREF (type);
+      return -1;
+    }
+
+  return 0;
+}
+#endif
 
 typedef struct {
   PyObject_HEAD
@@ -591,20 +600,31 @@ static struct PyModuleDef moduledef = {
 
 PyMODINIT_FUNC PyInit__giscanner(void)
 {
-    PyObject *m, *d;
+    PyObject *m;
 
     m = PyModule_Create (&moduledef);
-    d = PyModule_GetDict (m);
 
     PyGISourceScanner_Type.tp_init = (initproc)pygi_source_scanner_init;
     PyGISourceScanner_Type.tp_methods = (PyMethodDef*)_PyGISourceScanner_methods;
-    REGISTER_TYPE (d, "SourceScanner", PyGISourceScanner_Type);
+    if (PyModule_AddType(m, &PyGISourceScanner_Type) < 0)
+      {
+        Py_DECREF (m);
+        return NULL;
+      }
 
     PyGISourceSymbol_Type.tp_getset = (PyGetSetDef*)_PyGISourceSymbol_getsets;
-    REGISTER_TYPE (d, "SourceSymbol", PyGISourceSymbol_Type);
+    if (PyModule_AddType(m, &PyGISourceSymbol_Type) < 0)
+      {
+        Py_DECREF (m);
+        return NULL;
+      }
 
     PyGISourceType_Type.tp_getset = (PyGetSetDef*)_PyGISourceType_getsets;
-    REGISTER_TYPE (d, "SourceType", PyGISourceType_Type);
+    if (PyModule_AddType(m, &PyGISourceType_Type) < 0)
+      {
+        Py_DECREF (m);
+        return NULL;
+      }
 
     return m;
 }
