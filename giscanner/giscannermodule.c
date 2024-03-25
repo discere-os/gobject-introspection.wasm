@@ -28,17 +28,8 @@
 
 #include <glib-object.h>
 
-#if PY_MAJOR_VERSION >= 3
-    #define MOD_INIT(name) PyMODINIT_FUNC PyInit_##name(void)
-    #define MOD_ERROR_RETURN NULL
-    #define PyInt_FromLong PyLong_FromLong
-#else
-    #define MOD_INIT(name) DL_EXPORT(void) init##name(void)
-    #define MOD_ERROR_RETURN
-#endif
-
 /* forward declaration */
-_GI_EXTERN MOD_INIT(_giscanner);
+_GI_EXTERN PyMODINIT_FUNC PyInit__giscanner(void);
 
 #define NEW_CLASS(ctype, name, cname, num_methods)	      \
 static const PyMethodDef _Py##cname##_methods[num_methods] G_GNUC_UNUSED;    \
@@ -59,7 +50,7 @@ PyTypeObject Py##cname##_Type = {             \
     type.tp_new = PyType_GenericNew;          \
     type.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE; \
     if (PyType_Ready (&type))                 \
-        return MOD_ERROR_RETURN;              \
+        return NULL;              \
     PyDict_SetItemString (d, name, (PyObject *)&type); \
     Py_INCREF (&type);
 
@@ -108,14 +99,14 @@ static PyObject *
 symbol_get_type (PyGISourceSymbol *self,
 		 void             *context)
 {
-  return PyInt_FromLong (self->symbol->type);
+  return PyLong_FromLong (self->symbol->type);
 }
 
 static PyObject *
 symbol_get_line (PyGISourceSymbol *self,
 		 void             *context)
 {
-  return PyInt_FromLong (self->symbol->line);
+  return PyLong_FromLong (self->symbol->line);
 }
 
 static PyObject *
@@ -257,28 +248,28 @@ static PyObject *
 type_get_type (PyGISourceType *self,
 	       void           *context)
 {
-  return PyInt_FromLong (self->type->type);
+  return PyLong_FromLong (self->type->type);
 }
 
 static PyObject *
 type_get_storage_class_specifier (PyGISourceType *self,
 				  void           *context)
 {
-  return PyInt_FromLong (self->type->storage_class_specifier);
+  return PyLong_FromLong (self->type->storage_class_specifier);
 }
 
 static PyObject *
 type_get_type_qualifier (PyGISourceType *self,
 			 void           *context)
 {
-  return PyInt_FromLong (self->type->type_qualifier);
+  return PyLong_FromLong (self->type->type_qualifier);
 }
 
 static PyObject *
 type_get_function_specifier (PyGISourceType *self,
 			     void           *context)
 {
-  return PyInt_FromLong (self->type->function_specifier);
+  return PyLong_FromLong (self->type->function_specifier);
 }
 
 static PyObject *
@@ -328,7 +319,7 @@ static PyObject *
 type_get_is_bitfield (PyGISourceType *self,
 			     void           *context)
 {
-  return PyInt_FromLong (self->type->is_bitfield);
+  return PyLong_FromLong (self->type->is_bitfield);
 }
 
 static const PyGetSetDef _PyGISourceType_getsets[] = {
@@ -592,7 +583,6 @@ static const PyMethodDef _PyGISourceScanner_methods[] = {
 
 /* Module */
 
-#if PY_MAJOR_VERSION >= 3
 static struct PyModuleDef moduledef = {
 	PyModuleDef_HEAD_INIT,
 	NULL, /* m_name */
@@ -601,20 +591,15 @@ static struct PyModuleDef moduledef = {
 	NULL,
 	NULL
 };
-#endif /* PY_MAJOR_VERSION >= 3 */
 
 
-MOD_INIT(_giscanner)
+PyMODINIT_FUNC PyInit__giscanner(void)
 {
     PyObject *m, *d;
     const char *module_name = "giscanner._giscanner";
 
-#if PY_MAJOR_VERSION >= 3
     moduledef.m_name = module_name;
     m = PyModule_Create (&moduledef);
-#else
-    m = Py_InitModule (module_name, NULL);
-#endif
     d = PyModule_GetDict (m);
 
     PyGISourceScanner_Type.tp_init = (initproc)pygi_source_scanner_init;
@@ -627,7 +612,5 @@ MOD_INIT(_giscanner)
     PyGISourceType_Type.tp_getset = (PyGetSetDef*)_PyGISourceType_getsets;
     REGISTER_TYPE (d, "SourceType", PyGISourceType_Type);
 
-#if PY_MAJOR_VERSION >= 3
     return m;
-#endif
 }
