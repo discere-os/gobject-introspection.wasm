@@ -364,7 +364,7 @@ static PyObject *
 pygi_source_scanner_append_filename (PyGISourceScanner *self,
 				     PyObject          *args)
 {
-  char *filename;
+  const char *filename;
   GFile *file;
 
   if (!PyArg_ParseTuple (args, "s:SourceScanner.append_filename", &filename))
@@ -434,7 +434,7 @@ static PyObject *
 pygi_source_scanner_parse_file (PyGISourceScanner *self,
 				PyObject          *args)
 {
-  char *filename;
+  const char *filename;
 
   if (!PyArg_ParseTuple (args, "s:SourceScanner.parse_file", &filename))
     return NULL;
@@ -453,7 +453,7 @@ static PyObject *
 pygi_source_scanner_lex_filename (PyGISourceScanner *self,
 				  PyObject          *args)
 {
-  char *filename;
+  const char *filename;
   GFile *file;
 
   if (!PyArg_ParseTuple (args, "s:SourceScanner.lex_filename", &filename))
