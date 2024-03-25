@@ -501,7 +501,6 @@ pygi_source_scanner_get_comments (PyGISourceScanner *self, G_GNUC_UNUSED PyObjec
     {
       GISourceComment *comment = g_ptr_array_index (comments, i);
       PyObject *comment_obj;
-      PyObject *filename_obj;
       PyObject *item;
 
       if (comment->comment)
@@ -521,21 +520,10 @@ pygi_source_scanner_get_comments (PyGISourceScanner *self, G_GNUC_UNUSED PyObjec
           comment_obj = Py_None;
         }
 
-      if (comment->filename)
-        {
-          filename_obj = PyUnicode_FromString (comment->filename);
-        }
-      else
-        {
-          Py_INCREF (Py_None);
-          filename_obj = Py_None;
-        }
-
-      item = Py_BuildValue ("(OOi)", comment_obj, filename_obj, comment->line);
+      item = Py_BuildValue ("(Osi)", comment_obj, comment->filename, comment->line);
       PyList_SetItem (list, i, item);
 
       Py_DECREF (comment_obj);
-      Py_DECREF (filename_obj);
     }
 
   return list;
