@@ -58,6 +58,9 @@ class CCodeGenerator(object):
         and param.transfer == ast.PARAM_TRANSFER_NONE):
             return "const gchar*" + suffix
 
+        if (param.type == ast.TYPE_CHAR):
+            return "gchar*" + suffix
+
         return param.type.ctype + suffix
 
     def _write_prelude(self, out, func):
