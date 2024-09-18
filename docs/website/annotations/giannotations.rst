@@ -6,7 +6,6 @@ Symbol visibility
 
 .. list-table::
   :header-rows: 1
-  :widths: 1 1 10 1
 
   * - Annotation
     - Applies to
@@ -37,7 +36,6 @@ Memory and lifecycle management
 
 .. list-table::
   :header-rows: 1
-  :widths: 1 1 10 1
 
   * - Annotation
     - Applies to
@@ -75,7 +73,6 @@ Support for GObject objects
 
 .. list-table::
   :header-rows: 1
-  :widths: 1 1 10 1
 
   * - Annotation
     - Applies to
@@ -140,7 +137,6 @@ Support for GObject closures
 
 .. list-table::
   :header-rows: 1
-  :widths: 1 1 10 1
 
   * - Annotation
     - Applies to
@@ -172,7 +168,6 @@ Support for non-GObject fundamental objects
 
 .. list-table::
   :header-rows: 1
-  :widths: 1 1 10 1
 
   * - Annotation
     - Applies to
@@ -212,7 +207,6 @@ Type signature
 
 .. list-table::
   :header-rows: 1
-  :widths: 1 1 10 1
 
   * - Annotation
     - Applies to
@@ -376,7 +370,6 @@ Data annotations
 
 .. list-table::
   :header-rows: 1
-  :widths: 1 1 10 1
 
   * - Annotation
     - Applies to
@@ -401,7 +394,6 @@ Deprecated GObject-Introspection annotations
 
 .. list-table::
   :header-rows: 1
-  :widths: 1 10 1
 
   * - Annotation
     - Description
@@ -428,7 +420,6 @@ of development.
 
 .. list-table::
   :header-rows: 1
-  :widths: 1 1 10 1
 
   * - Annotation
     - Applies to
