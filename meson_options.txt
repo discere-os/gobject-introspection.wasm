@@ -22,6 +22,10 @@ option('python', type: 'string', value: 'python3',
   description: 'Path or name of the Python interpreter to build for'
 )
 
+option('python_shebang', type: 'string',
+  description: 'shebang to use in installed python scripts'
+)
+
 option('gir_dir_prefix', type: 'string',
   description: 'Intermediate prefix for gir installation under ${prefix}'
 )
