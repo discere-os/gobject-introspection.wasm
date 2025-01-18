@@ -45,3 +45,7 @@ option('build_introspection_data', type: 'boolean', value : true,
 option('gi_cross_pkgconfig_sysroot_path', type: 'string',
   description: 'Specify a sysroot path to prepend to pkgconfig output (useful when cross-compiling)'
 )
+
+option('extra_library_paths', type: 'string',
+  description: 'A list of file paths, joined together using the searchpath separator character, that will be used to search for shared libraries'
+)

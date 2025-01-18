@@ -193,6 +193,10 @@ if dep_type == 'internal'
   g_ir_scanner_env.set('PKG_CONFIG', pkg_config.full_path())
 endif
 
+if get_option('extra_library_paths') != ''
+  config.set_quoted('EXTRA_LIBRARY_PATHS', get_option('extra_library_paths'))
+endif
+
 configure_file(
   configuration: config,
   output: 'config.h'
