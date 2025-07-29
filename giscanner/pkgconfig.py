@@ -65,6 +65,8 @@ def libs(packages, msvc_syntax=False, ignore_errors=True, command=None):
     flags.append('--libs')
     flags.extend(packages)
     out = check_output(flags, ignore_errors, command)
+    if msvc_syntax:
+        return list(filter(lambda lib: lib != 'm.lib', shlex.split(out)))
     return shlex.split(out)
 
 
