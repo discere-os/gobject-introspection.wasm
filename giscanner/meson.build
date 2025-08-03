@@ -18,6 +18,7 @@ giscanner_files = [
   'message.py',
   'msvccompiler.py',
   'pkgconfig.py',
+  'rspfileargs.py',
   'shlibs.py',
   'scannermain.py',
   'sectionparser.py',
