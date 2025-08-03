@@ -96,6 +96,25 @@ giscanner_lib = static_library('giscanner',
   dependencies: [glib_dep, gobject_dep, gio_dep, gmodule_dep],
 )
 
+has_bin_tools = false
+python_emb_dep = python.dependency(embed: true, required: false)
+if python_emb_dep.found() and meson.version().version_compare('>= 1.9.0')
+  gitool_bin = static_library('gitool', 'gitoolbin.c', 'giscannermodule.c', gdump,
+    c_args: gi_hidden_visibility_cflags + custom_c_args,
+    include_directories: configinc,
+    link_with: giscanner_lib,
+    dependencies: [
+      gio_dep,
+      python_emb_dep,
+    ]
+  )
+  giscanner_bin = executable('g-ir-scanner', link_whole: gitool_bin)
+  giannot_bin = executable('g-ir-annotation-tool', link_whole: gitool_bin)
+  meson.override_find_program('g-ir-scanner', giscanner_bin)
+  meson.override_find_program('g-ir-annotation-tool', giannot_bin)
+  has_bin_tools = true
+endif
+
 # https://github.com/mesonbuild/meson/issues/4117
 if host_machine.system() == 'windows'
   python_ext_dep = python.dependency()
