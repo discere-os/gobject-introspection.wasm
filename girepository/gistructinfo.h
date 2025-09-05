@@ -38,7 +38,8 @@ G_BEGIN_DECLS
  * Checks if @info is a #GIStructInfo.
  */
 #define GI_IS_STRUCT_INFO(info) \
-    (g_base_info_get_type((GIBaseInfo*)info) ==  GI_INFO_TYPE_STRUCT)
+    (g_base_info_get_type((GIBaseInfo*)info) ==  GI_INFO_TYPE_STRUCT || \
+     g_base_info_get_type((GIBaseInfo*)info) ==  GI_INFO_TYPE_BOXED)
 
 
 GI_AVAILABLE_IN_ALL
