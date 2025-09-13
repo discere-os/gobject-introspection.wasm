@@ -38,7 +38,8 @@ _CACHE_VERSION_FILENAME = '.cache-version'
 def _get_versionhash():
     toplevel = os.path.dirname(giscanner.__file__)
     sources = glob.glob(os.path.join(toplevel, '*.py'))
-    sources.append(sys.argv[0])
+    if sys.argv[0] != '':
+        sources.append(sys.argv[0])
     # Using mtimes is a bit (5x) faster than hashing the file contents
     mtimes = (str(os.stat(source).st_mtime) for source in sources)
     # ASCII encoding is sufficient since we are only dealing with numbers.

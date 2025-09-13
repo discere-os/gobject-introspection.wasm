@@ -110,6 +110,8 @@ config.set('GI_MAJOR_VERSION', gi_versions[0])
 config.set('GI_MINOR_VERSION', gi_versions[1])
 config.set('GI_MICRO_VERSION', gi_versions[2])
 
+config.set_quoted('GI_BUILD_DIR', meson.project_build_root())
+
 config.set_quoted('GIR_SUFFIX', 'gir-1.0')
 gir_dir_prefix = get_option('gir_dir_prefix')
 if gir_dir_prefix == '' or gir_dir_prefix == get_option('datadir')
@@ -283,13 +285,13 @@ endif
 fs = import('fs')
 
 subdir('girepository')
-subdir('tools')
 subdir('giscanner')
+subdir('tools')
 
 # Not building gir data might be useful in cross-compilation
 # scenarios where running target binaries through software emulation
 # is not possible (due to the SW emulation missing support for target HW).
-if get_option('build_introspection_data') == true
+if get_option('build_introspection_data') == true and false
   subdir('gir')
 else
   # for tests
@@ -357,7 +359,7 @@ pkg.generate(
 # fallback : ['gobject-introspection', 'girepo_dep'])
 if get_option('build_introspection_data') == true
   girepo_dep = declare_dependency(
-    sources: typelibs,
+    #sources: typelibs,
     dependencies: girepo_dep,
     variables: {
       'girdir': meson.current_build_dir() / 'gir',

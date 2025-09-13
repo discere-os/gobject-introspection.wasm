@@ -39,7 +39,7 @@ foreach tool : tools
   )
   tool_output += tool_bin
   # Provide tools for others when we're a subproject and they use the Meson GNOME module
-  if not get_option('gi_cross_use_prebuilt_gi')
+  if not get_option('gi_cross_use_prebuilt_gi') and not has_bin_tools
     meson.override_find_program(tool[0], tool_bin)
   endif
 endforeach
@@ -66,7 +66,9 @@ gircompiler = executable('g-ir-compiler', 'compiler.c',
   install: true,
   c_args: custom_c_args,
 )
-meson.override_find_program('g-ir-compiler', gircompiler)
+if not glib_dep.version().version_compare('>= 2.79.2')
+  meson.override_find_program('g-ir-compiler', gircompiler)
+endif
 
 girgenerate = executable('g-ir-generate', 'generate.c',
   dependencies: [
