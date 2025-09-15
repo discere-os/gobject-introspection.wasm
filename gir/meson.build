@@ -59,7 +59,8 @@ endforeach
 install_data(installed_gir_files, install_dir: girdir)
 
 scanner_command = [
-  find_program('g-ir-scanner', native: true),
+  python,
+  find_program('g-ir-scanner', native: true).path(),
   '--output=@OUTPUT@',
   '--no-libtool',
   '--quiet',
