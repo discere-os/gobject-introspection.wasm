@@ -39,6 +39,7 @@ G_PARAM_LAX_VALIDATION = 1 << 4
 G_PARAM_STATIC_NAME = 1 << 5
 G_PARAM_STATIC_NICK = 1 << 6
 G_PARAM_STATIC_BLURB = 1 << 7
+G_PARAM_DEPRECATED = 1 << 31
 
 
 class IntrospectionBinary(object):
@@ -434,12 +435,14 @@ different --identifier-prefix.""" % (xmlnode.attrib['name'], self._namespace.ide
             writable = (flags & G_PARAM_WRITABLE) != 0
             construct = (flags & G_PARAM_CONSTRUCT) != 0
             construct_only = (flags & G_PARAM_CONSTRUCT_ONLY) != 0
+            deprecated = (flags & G_PARAM_DEPRECATED) != 0
             default_value = pspec.attrib.get('default-value')
             prop = ast.Property(
                 pspec.attrib['name'],
                 ast.Type.create_from_gtype_name(ctype),
                 readable, writable, construct, construct_only)
             prop.default_value = default_value
+            prop.deprecated = deprecated
             node.properties.append(prop)
         node.properties = node.properties
 

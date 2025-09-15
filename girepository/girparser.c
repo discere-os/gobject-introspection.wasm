@@ -1614,6 +1614,7 @@ start_property (GMarkupParseContext *context,
   const gchar *writable;
   const gchar *construct;
   const gchar *construct_only;
+  const gchar *deprecated;
   const gchar *transfer;
   const gchar *setter;
   const gchar *getter;
@@ -1641,6 +1642,7 @@ start_property (GMarkupParseContext *context,
   writable = find_attribute ("writable", attribute_names, attribute_values);
   construct = find_attribute ("construct", attribute_names, attribute_values);
   construct_only = find_attribute ("construct-only", attribute_names, attribute_values);
+  deprecated = find_attribute ("deprecated", attribute_names, attribute_values);
   transfer = find_attribute ("transfer-ownership", attribute_names, attribute_values);
   setter = find_attribute ("setter", attribute_names, attribute_values);
   getter = find_attribute ("getter", attribute_names, attribute_values);
@@ -1674,6 +1676,10 @@ start_property (GMarkupParseContext *context,
     property->construct_only = TRUE;
   else
     property->construct_only = FALSE;
+  if (deprecated && strcmp (deprecated, "1") == 0)
+    property->deprecated = TRUE;
+  else
+    property->deprecated = FALSE;
 
   property->setter = g_strdup (setter);
   property->getter = g_strdup (getter);
